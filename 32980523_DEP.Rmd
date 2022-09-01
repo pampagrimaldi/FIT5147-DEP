@@ -49,8 +49,17 @@ Provide any additional thoughts around the research question
 The following libraries will be used for this project:
 
 ```{r libraries, include=FALSE}
+# for all things EDA
 library(tidyverse)
+# for geospatial data
+library(broom)
+#install.packages("geojsonio")
+library(mapproj)
+library(geojsonio)
+# for plotting
+library(ggplot2)
 # other libraries (potentially)
+
 ```
 
 ------------------------------------------------------------------------
@@ -104,7 +113,7 @@ It's reasonable to expect they all contain the same number of variables, as they
 
 ```{r}
 # combine data sets
-melbourne.listings <- bind_rows(mel.listings.2206,mel.listings.2203,mel.listings.2112,mel.listings.2109, .id = "id")
+mel.listings <- bind_rows(mel.listings.2206,mel.listings.2203,mel.listings.2112,mel.listings.2109, .id = "id")
 ```
 
 We will follow the same process for the other locations:
@@ -137,7 +146,44 @@ tas.listings.2109 <- read_csv('data/Tasmania/2021_09/listings.csv.gz', show_col_
 tas.listings <- bind_rows(tas.listings.2206,tas.listings.2203,tas.listings.2112,tas.listings.2109, .id = "id")
 ```
 
-\##
+```{r}
+#Loading  Northern Rivers listings
+nr.listings.2206 <- read_csv('data/Northern_Rivers/2022_06/listings.csv.gz', show_col_types = FALSE)
+#march 2022 listings
+nr.listings.2203 <- read_csv('data/Northern_Rivers/2022_03/listings.csv.gz', show_col_types = FALSE)
+# #december 2021 listings
+nr.listings.2112 <- read_csv('data/Northern_Rivers/2021_12/listings.csv.gz', show_col_types = FALSE)
+# #september 2021 listings
+nr.listings.2109 <- read_csv('data/Northern_Rivers/2021_09/listings.csv.gz', show_col_types = FALSE)
+# combine data sets
+nr.listings <- bind_rows(tas.listings.2206,tas.listings.2203,tas.listings.2112,tas.listings.2109, .id = "id")
+```
+
+Combine all listings
+
+```{r}
+# listings dataset
+all.listings <- bind_rows(mel.listings,scl.listings,nr.listings,tas.listings, .id = "id")
+```
+
+#### Reviews
+
+### Geospatial ata
+
+Loading the maps
+
+### Melbourne
+
+```{r}
+# Plot it
+
+mel.map <- geojson_read('data/Santiago/2022_06/neighbourhoods.geojson', what="sp")
+
+ggplot() +
+  geom_polygon(data = mel.map, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
+  theme_void() +
+  coord_map()
+```
 
 #### Structure of the data
 
