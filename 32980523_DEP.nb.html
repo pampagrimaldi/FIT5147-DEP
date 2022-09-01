@@ -11,7 +11,7 @@
 
 
 
-<title>R Notebook</title>
+<title>FIT5147 DEP S2 2022 - 32980523</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1762,16 +1762,59 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">R Notebook</h1>
+<h1 class="title toc-ignore">FIT5147 DEP S2 2022 - 32980523</h1>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#fit5147-data-exploration-project" id="toc-fit5147-data-exploration-project">FIT5147 | Data Exploration
+Project</a>
+<ul>
+<li><a href="#study-of-airbnb-user-preferences-in-chile-and-australia" id="toc-study-of-airbnb-user-preferences-in-chile-and-australia">Study
+of Airbnb User Preferences in Chile and Australia</a></li>
+<li><a href="#introduction" id="toc-introduction"><strong>1.
+Introduction</strong></a>
+<ul>
+<li><a href="#research-question-1-common-features-of-popular-listings-across-cities-in-the-study" id="toc-research-question-1-common-features-of-popular-listings-across-cities-in-the-study">1.1
+Research Question 1: Common features of popular listings across cities
+in the study</a></li>
+<li><a href="#research-question-2-common-features-of-popular-listings-across-cities-in-the-study" id="toc-research-question-2-common-features-of-popular-listings-across-cities-in-the-study">1.2
+Research Question 2: Common features of popular listings across cities
+in the study</a></li>
+<li><a href="#research-question-3-how-have-the-listing-prices-evolved-during-the-last-year-across-all-cities-in-the-study" id="toc-research-question-3-how-have-the-listing-prices-evolved-during-the-last-year-across-all-cities-in-the-study">1.3
+Research Question 3: How have the listing prices evolved during the last
+year across all cities in the study?</a></li>
+<li><a href="#environment-setup" id="toc-environment-setup">1.4
+Environment Setup</a></li>
+</ul></li>
+<li><a href="#data-collection-and-measurement-strategy" id="toc-data-collection-and-measurement-strategy"><strong>2. Data
+Collection and Measurement Strategy</strong></a>
+<ul>
+<li><a href="#description-of-the-data" id="toc-description-of-the-data">2.1 Description of the data</a></li>
+<li><a href="#data-sources" id="toc-data-sources">2.2 Data
+sources</a></li>
+</ul></li>
+<li><a href="#step-3-visualize-summarize-data" id="toc-step-3-visualize-summarize-data"><strong>Step 3: Visualize &amp;
+Summarize Data</strong></a></li>
+<li><a href="#step-4-model-developmentinterpretation" id="toc-step-4-model-developmentinterpretation"><strong>Step 4: Model
+Development/Interpretation</strong></a></li>
+<li><a href="#step-5-model-evaluation" id="toc-step-5-model-evaluation"><strong>Step 5: Model
+Evaluation</strong></a></li>
+<li><a href="#step-6-communication-of-results" id="toc-step-6-communication-of-results"><strong>Step 6: Communication
+of Results</strong></a>
+<ul>
+<li><a href="#section" id="toc-section"></a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
 
 <!-- rnb-text-begin -->
 <div id="fit5147-data-exploration-project" class="section level1">
 <h1>FIT5147 | Data Exploration Project</h1>
-<div id="section" class="section level2">
-<h2></h2>
+<div id="study-of-airbnb-user-preferences-in-chile-and-australia" class="section level2">
+<h2>Study of Airbnb User Preferences in Chile and Australia</h2>
 <blockquote>
 <p>The objective is to provide an easy to follow framework for analysis
 that allows the analyst or PhD student to walk through their entire
@@ -1784,14 +1827,46 @@ outputs for the code, and any comments/thoughts that may help the reader
 interpret the approach that was taken.</p>
 </blockquote>
 </div>
-<div id="step-1-research-questionproblem-statement" class="section level2">
-<h2><strong>Step 1: Research Question/Problem Statement</strong></h2>
-<ol style="list-style-type: decimal">
-<li><p>Research Question/Problem Statement #1</p></li>
-<li><p>Research Question/Problem Statement #2</p></li>
-</ol>
-<div id="notes" class="section level5">
-<h5><strong>NOTES:</strong></h5>
+<div id="introduction" class="section level2">
+<h2><strong>1. Introduction</strong></h2>
+<p>For this study I’ve chosen two cities that I’m highly familiar with:
+<strong>Santiago de Chile</strong>, where I lived most of my life up
+until the age of 26; and <strong>Melbourne, Australia</strong> where
+I&#39;ve lived for the past 7 years. Both of this cities are upwards of 5
+million people and are visited by thousand of tourists every year.</p>
+<p>As you will see in next section, the data sets are large enough to be
+studied on their own, but I see an opportunity to perform insightful
+research by comparing additional destinations in Australia such as the
+Northern Rivers region in New South Wales and Barwon South West in
+Victoria. Both of these areas are popular holiday destinations, and it
+would be interesting to contrast their characteristics to bigger cities
+in the study. As a result of this analysis, I hope the findings may be
+of use as a set of fundamental insights to both investors seeking to
+understand the short term rental markets, or for public policy makers to
+provide guidance on regulation or infrastructure decisions.</p>
+<div id="research-question-1-common-features-of-popular-listings-across-cities-in-the-study" class="section level3">
+<h3>1.1 Research Question 1: Common features of popular listings across
+cities in the study</h3>
+<blockquote>
+<p>What are some of the common features of popular listings in the
+cities included in the study? For example, can we see clusters of
+popularity in certain areas of the city that are near the CBD or near
+bars and restaurants?</p>
+</blockquote>
+</div>
+<div id="research-question-2-common-features-of-popular-listings-across-cities-in-the-study" class="section level3">
+<h3>1.2 Research Question 2: Common features of popular listings across
+cities in the study</h3>
+<blockquote>
+<p>Are there any significant differences on these features across
+Santiago and Melbourne suburbs? For example, are the popular areas in
+Santiago more concentrated compared to Melbourne?</p>
+</blockquote>
+</div>
+<div id="research-question-3-how-have-the-listing-prices-evolved-during-the-last-year-across-all-cities-in-the-study" class="section level3">
+<h3>1.3 Research Question 3: How have the listing prices evolved during
+the last year across all cities in the study?</h3>
+<p>(TBC)</p>
 <p>Provide any additional thoughts around the research question</p>
 <ul>
 <li><p>Hypothesis</p></li>
@@ -1800,24 +1875,115 @@ interpret the approach that was taken.</p>
 <li><p>Etc.</p></li>
 </ul>
 </div>
+<div id="environment-setup" class="section level3">
+<h3>1.4 Environment Setup</h3>
+<p>The following libraries will be used for this project:</p>
+<!-- rnb-text-end -->
+<!-- rnb-text-begin -->
+<hr />
 </div>
-<div id="step-2-data-collectionmeasurement-strategy" class="section level2">
-<h2><strong>Step 2: Data Collection/Measurement Strategy</strong></h2>
+</div>
+<div id="data-collection-and-measurement-strategy" class="section level2">
+<h2><strong>2. Data Collection and Measurement Strategy</strong></h2>
+<div id="description-of-the-data" class="section level3">
+<h3>2.1 Description of the data</h3>
+<p>The data set contains information from <a href="http://insideairbnb.com/get-the-data/">Inside Airbnb</a> about
+four different regions:</p>
 <ol style="list-style-type: decimal">
-<li>Description of the Data</li>
+<li>Melbourne, Australia</li>
+<li>Northern Rivers, Australia</li>
+<li>Tasmania, Australia</li>
+<li>Santiago, Chile</li>
 </ol>
+<p>The following information is provide for each one of these
+cities:</p>
 <ul>
-<li>Data sources (database, websites, data collection, etc.)</li>
+<li><p>Detailed listings data</p></li>
+<li><p>Detailed Calendar data</p></li>
+<li><p>Detailed Review data</p></li>
+<li><p>GeoJSON file</p></li>
+<li><p>Other… (TBC)</p></li>
 </ul>
+<p>In addition, the study will use the last four available quarterly
+information released for each location.</p>
+</div>
+<div id="data-sources" class="section level3">
+<h3>2.2 Data sources</h3>
 <p>The following steps will go through loading the data that will be
 used throughout the project.</p>
-<ul>
-<li><p>Structure of the data</p></li>
-<li><p>Data issues (missing data, messy data, etc.)</p></li>
-</ul>
-<ol start="2" style="list-style-type: decimal">
-<li>Collection/Measurement</li>
-</ol>
+<div id="listings" class="section level4">
+<h4>Listings</h4>
+<p>Firstly we will load Melbourne’s quarterly listing information into
+individual data frames and combine them for inspection.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0xvYWRpbmcgTWVsYm91cm5lIGxpc3RpbmdzXG4janVuZSAyMDIyIGxpc3RpbmdzXG5tZWwubGlzdGluZ3MuMjIwNiA8LSByZWFkX2NzdignZGF0YS9NZWxib3VybmUvMjAyMl8wNi9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKVxuI21hcmNoIDIwMjIgbGlzdGluZ3Ncbm1lbC5saXN0aW5ncy4yMjAzIDwtIHJlYWRfY3N2KCdkYXRhL01lbGJvdXJuZS8yMDIyXzAzL2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpXG4jICNkZWNlbWJlciAyMDIxIGxpc3RpbmdzXG5tZWwubGlzdGluZ3MuMjExMiA8LSByZWFkX2NzdignZGF0YS9NZWxib3VybmUvMjAyMV8xMi9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKVxuIyAjc2VwdGVtYmVyIDIwMjEgbGlzdGluZ3Ncbm1lbC5saXN0aW5ncy4yMTA5IDwtIHJlYWRfY3N2KCdkYXRhL01lbGJvdXJuZS8yMDIxXzA5L2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpXG5gYGAifQ== -->
+<pre class="r"><code>#Loading Melbourne listings
+#june 2022 listings
+mel.listings.2206 &lt;- read_csv(&#39;data/Melbourne/2022_06/listings.csv.gz&#39;, show_col_types = FALSE)
+#march 2022 listings
+mel.listings.2203 &lt;- read_csv(&#39;data/Melbourne/2022_03/listings.csv.gz&#39;, show_col_types = FALSE)
+# #december 2021 listings
+mel.listings.2112 &lt;- read_csv(&#39;data/Melbourne/2021_12/listings.csv.gz&#39;, show_col_types = FALSE)
+# #september 2021 listings
+mel.listings.2109 &lt;- read_csv(&#39;data/Melbourne/2021_09/listings.csv.gz&#39;, show_col_types = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>It’s reasonable to expect they all contain the same number of
+variables, as they come from the same data source.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjb21iaW5lIGRhdGEgc2V0c1xubWVsYm91cm5lLmxpc3RpbmdzIDwtIGJpbmRfcm93cyhtZWwubGlzdGluZ3MuMjIwNixtZWwubGlzdGluZ3MuMjIwMyxtZWwubGlzdGluZ3MuMjExMixtZWwubGlzdGluZ3MuMjEwOSwgLmlkID0gXCJpZFwiKVxuYGBgIn0= -->
+<pre class="r"><code># combine data sets
+melbourne.listings &lt;- bind_rows(mel.listings.2206,mel.listings.2203,mel.listings.2112,mel.listings.2109, .id = &quot;id&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We will follow the same process for the other locations:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0xvYWRpbmcgU2FudGlhZ28gbGlzdGluZ3NcbiNqdW5lIDIwMjIgbGlzdGluZ3NcbnNjbC5saXN0aW5ncy4yMjA2IDwtIHJlYWRfY3N2KCdkYXRhL1NhbnRpYWdvLzIwMjJfMDYvbGlzdGluZ3MuY3N2Lmd6Jywgc2hvd19jb2xfdHlwZXMgPSBGQUxTRSlcbiNtYXJjaCAyMDIyIGxpc3RpbmdzXG5zY2wubGlzdGluZ3MuMjIwMyA8LSByZWFkX2NzdignZGF0YS9TYW50aWFnby8yMDIyXzAzL2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpXG4jICNkZWNlbWJlciAyMDIxIGxpc3RpbmdzXG5zY2wubGlzdGluZ3MuMjExMiA8LSByZWFkX2NzdignZGF0YS9TYW50aWFnby8yMDIxXzEyL2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpXG4jICNzZXB0ZW1iZXIgMjAyMSBsaXN0aW5nc1xuc2NsLmxpc3RpbmdzLjIxMDkgPC0gcmVhZF9jc3YoJ2RhdGEvU2FudGlhZ28vMjAyMV8wOS9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKVxuIyBjb21iaW5lIGRhdGEgc2V0c1xuc2NsLmxpc3RpbmdzIDwtIGJpbmRfcm93cyhzY2wubGlzdGluZ3MuMjIwNixzY2wubGlzdGluZ3MuMjIwMyxzY2wubGlzdGluZ3MuMjExMixzY2wubGlzdGluZ3MuMjEwOSwgLmlkID0gXCJpZFwiKVxuYGBgIn0= -->
+<pre class="r"><code>#Loading Santiago listings
+#june 2022 listings
+scl.listings.2206 &lt;- read_csv(&#39;data/Santiago/2022_06/listings.csv.gz&#39;, show_col_types = FALSE)
+#march 2022 listings
+scl.listings.2203 &lt;- read_csv(&#39;data/Santiago/2022_03/listings.csv.gz&#39;, show_col_types = FALSE)
+# #december 2021 listings
+scl.listings.2112 &lt;- read_csv(&#39;data/Santiago/2021_12/listings.csv.gz&#39;, show_col_types = FALSE)
+# #september 2021 listings
+scl.listings.2109 &lt;- read_csv(&#39;data/Santiago/2021_09/listings.csv.gz&#39;, show_col_types = FALSE)
+# combine data sets
+scl.listings &lt;- bind_rows(scl.listings.2206,scl.listings.2203,scl.listings.2112,scl.listings.2109, .id = &quot;id&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0xvYWRpbmcgIFRhc21hbmlhIGxpc3RpbmdzXG50YXMubGlzdGluZ3MuMjIwNiA8LSByZWFkX2NzdignZGF0YS9UYXNtYW5pYS8yMDIyXzA2L2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpXG4jbWFyY2ggMjAyMiBsaXN0aW5nc1xudGFzLmxpc3RpbmdzLjIyMDMgPC0gcmVhZF9jc3YoJ2RhdGEvVGFzbWFuaWEvMjAyMl8wMy9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKVxuIyAjZGVjZW1iZXIgMjAyMSBsaXN0aW5nc1xudGFzLmxpc3RpbmdzLjIxMTIgPC0gcmVhZF9jc3YoJ2RhdGEvVGFzbWFuaWEvMjAyMV8xMi9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKVxuIyAjc2VwdGVtYmVyIDIwMjEgbGlzdGluZ3NcbnRhcy5saXN0aW5ncy4yMTA5IDwtIHJlYWRfY3N2KCdkYXRhL1Rhc21hbmlhLzIwMjFfMDkvbGlzdGluZ3MuY3N2Lmd6Jywgc2hvd19jb2xfdHlwZXMgPSBGQUxTRSlcbiMgY29tYmluZSBkYXRhIHNldHNcbnRhcy5saXN0aW5ncyA8LSBiaW5kX3Jvd3ModGFzLmxpc3RpbmdzLjIyMDYsdGFzLmxpc3RpbmdzLjIyMDMsdGFzLmxpc3RpbmdzLjIxMTIsdGFzLmxpc3RpbmdzLjIxMDksIC5pZCA9IFwiaWRcIilcbmBgYCJ9 -->
+<pre class="r"><code>#Loading  Tasmania listings
+tas.listings.2206 &lt;- read_csv(&#39;data/Tasmania/2022_06/listings.csv.gz&#39;, show_col_types = FALSE)
+#march 2022 listings
+tas.listings.2203 &lt;- read_csv(&#39;data/Tasmania/2022_03/listings.csv.gz&#39;, show_col_types = FALSE)
+# #december 2021 listings
+tas.listings.2112 &lt;- read_csv(&#39;data/Tasmania/2021_12/listings.csv.gz&#39;, show_col_types = FALSE)
+# #september 2021 listings
+tas.listings.2109 &lt;- read_csv(&#39;data/Tasmania/2021_09/listings.csv.gz&#39;, show_col_types = FALSE)
+# combine data sets
+tas.listings &lt;- bind_rows(tas.listings.2206,tas.listings.2203,tas.listings.2112,tas.listings.2109, .id = &quot;id&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>##</p>
+</div>
+<div id="structure-of-the-data" class="section level4">
+<h4>Structure of the data</h4>
+</div>
+<div id="data-issues-missing-data-messy-data-etc." class="section level4">
+<h4>Data issues (missing data, messy data, etc.)</h4>
+</div>
+<div id="collectionmeasurement" class="section level4">
+<h4>Collection/Measurement</h4>
 <ul>
 <li><p>If data needs to be collected, what are the measurements being
 taken (clearly define the procedures and standardization)?</p></li>
@@ -1825,9 +1991,9 @@ taken (clearly define the procedures and standardization)?</p></li>
 need to add a research step here and conducting your own
 validity/reliability study before proceeding)?</p></li>
 </ul>
-<ol start="3" style="list-style-type: decimal">
-<li>Data Cleaning</li>
-</ol>
+</div>
+<div id="data-cleaning" class="section level4">
+<h4>Data Cleaning</h4>
 <ul>
 <li><p>What pre-processing steps were taken?</p></li>
 <li><p>Clearly walk through the data cleanning process.</p></li>
@@ -1835,6 +2001,8 @@ validity/reliability study before proceeding)?</p></li>
 <li><p>Describe any imputation process for missing data.</p></li>
 <li><p>If any data was removed prior to analysis explain why.</p></li>
 </ul>
+</div>
+</div>
 </div>
 <div id="step-3-visualize-summarize-data" class="section level2">
 <h2><strong>Step 3: Visualize &amp; Summarize Data</strong></h2>
@@ -1874,14 +2042,14 @@ answered.</p></li>
 that may be incorporated to provide a more contextual answer to the
 research question.</p></li>
 </ul>
-<div id="section-1" class="section level3">
+<div id="section" class="section level3">
 <h3></h3>
 <!-- rnb-text-end -->
 </div>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBGSVQ1MTQ3IFx8IERhdGEgRXhwbG9yYXRpb24gUHJvamVjdAoKIyMgCgo+IFRoZSBvYmplY3RpdmUgaXMgdG8gcHJvdmlkZSBhbiBlYXN5IHRvIGZvbGxvdyBmcmFtZXdvcmsgZm9yIGFuYWx5c2lzIHRoYXQgYWxsb3dzIHRoZSBhbmFseXN0IG9yIFBoRCBzdHVkZW50IHRvIHdhbGsgdGhyb3VnaCB0aGVpciBlbnRpcmUgYXBwcm9hY2ggaW4gYSBzdGVwLWJ5LXN0ZXAgbWFubmVyIHdpdGggdGhlaXIgY29sbGVhZ3VlcyBvciBQaEQgc3VwZXJ2aXNvcnMuCgo+IEluIGVhY2ggb2YgdGhlIDYtc3RlcHMsIHRoZSByZXNlYXJjaGVyIGlzIHRvIHByb3ZpZGUgdGhlaXIgY29kZSwgb3V0cHV0cyBmb3IgdGhlIGNvZGUsIGFuZCBhbnkgY29tbWVudHMvdGhvdWdodHMgdGhhdCBtYXkgaGVscCB0aGUgcmVhZGVyIGludGVycHJldCB0aGUgYXBwcm9hY2ggdGhhdCB3YXMgdGFrZW4uCgojIyAqKlN0ZXAgMTogUmVzZWFyY2ggUXVlc3Rpb24vUHJvYmxlbSBTdGF0ZW1lbnQqKgoKMS4gIFJlc2VhcmNoIFF1ZXN0aW9uL1Byb2JsZW0gU3RhdGVtZW50ICMxCgoyLiAgUmVzZWFyY2ggUXVlc3Rpb24vUHJvYmxlbSBTdGF0ZW1lbnQgIzIKCiMjIyMjICoqTk9URVM6KioKClByb3ZpZGUgYW55IGFkZGl0aW9uYWwgdGhvdWdodHMgYXJvdW5kIHRoZSByZXNlYXJjaCBxdWVzdGlvbgoKLSAgIEh5cG90aGVzaXMKCi0gICBQb3RlbnRpYWwgaXNzdWVzIG9yIGNoYWxsZW5nZXMKCi0gICBQb3RlbnRpYWwgbGltaXRhdGlvbnMKCi0gICBFdGMuCgojIyAqKlN0ZXAgMjogRGF0YSBDb2xsZWN0aW9uL01lYXN1cmVtZW50IFN0cmF0ZWd5KioKCjEuICBEZXNjcmlwdGlvbiBvZiB0aGUgRGF0YQoKLSAgIERhdGEgc291cmNlcyAoZGF0YWJhc2UsIHdlYnNpdGVzLCBkYXRhIGNvbGxlY3Rpb24sIGV0Yy4pCgpUaGUgZm9sbG93aW5nIHN0ZXBzIHdpbGwgZ28gdGhyb3VnaCBsb2FkaW5nIHRoZSBkYXRhIHRoYXQgd2lsbCBiZSB1c2VkIHRocm91Z2hvdXQgdGhlIHByb2plY3QuCgotICAgU3RydWN0dXJlIG9mIHRoZSBkYXRhCgotICAgRGF0YSBpc3N1ZXMgKG1pc3NpbmcgZGF0YSwgbWVzc3kgZGF0YSwgZXRjLikKCjIuICBDb2xsZWN0aW9uL01lYXN1cmVtZW50CgotICAgSWYgZGF0YSBuZWVkcyB0byBiZSBjb2xsZWN0ZWQsIHdoYXQgYXJlIHRoZSBtZWFzdXJlbWVudHMgYmVpbmcgdGFrZW4gKGNsZWFybHkgZGVmaW5lIHRoZSBwcm9jZWR1cmVzIGFuZCBzdGFuZGFyZGl6YXRpb24pPwoKLSAgIEFyZSB0aGUgbWVhc3VyZW1lbnRzIHZhbGlkIGFuZCByZWxpYWJsZSAoaXMgdGhlcmUgcG90ZW50aWFsbHkgYSBuZWVkIHRvIGFkZCBhIHJlc2VhcmNoIHN0ZXAgaGVyZSBhbmQgY29uZHVjdGluZyB5b3VyIG93biB2YWxpZGl0eS9yZWxpYWJpbGl0eSBzdHVkeSBiZWZvcmUgcHJvY2VlZGluZyk/CgozLiAgRGF0YSBDbGVhbmluZwoKLSAgIFdoYXQgcHJlLXByb2Nlc3Npbmcgc3RlcHMgd2VyZSB0YWtlbj8KCi0gICBDbGVhcmx5IHdhbGsgdGhyb3VnaCB0aGUgZGF0YSBjbGVhbm5pbmcgcHJvY2Vzcy4KCi0gICBJcyBhbnkgZGF0YSBtaXNzaW5nLCBpZiBzbyBob3cgbXVjaD8KCi0gICBEZXNjcmliZSBhbnkgaW1wdXRhdGlvbiBwcm9jZXNzIGZvciBtaXNzaW5nIGRhdGEuCgotICAgSWYgYW55IGRhdGEgd2FzIHJlbW92ZWQgcHJpb3IgdG8gYW5hbHlzaXMgZXhwbGFpbiB3aHkuCgojIyAqKlN0ZXAgMzogVmlzdWFsaXplICYgU3VtbWFyaXplIERhdGEqKgoKLSAgIE9uY2UgZGF0YSBoYXMgYmVlbiBjb2xsZWN0ZWQgYW5kIGNsZWFuZWQsIHByb3ZpZGUgYW4gb3ZlcnZpZXcgb2YgdGhlIGRhdGEgdXNpbmcgc3VtbWFyaXplIHN0YXRpc3RpY3MgYW5kIHZpc3VhbHMuCgotICAgT2ZmZXIgaW50ZXJwcmV0YXRpb24gb2YgdmlzdWFscyB0aGF0IG1heSBoZWxwIGd1aWRlIHRoZSBtb2RlbCBidWlsZGluZyBwcm9jZXNzIG9yIGdlbmVyYXRlIGRpc2N1c3Npb24gYWJvdXQgYW55IHVuZGVybHlpbmcgdHJlbmRzIGluIHRoZSBkYXRhIHNwZWNpZmljIHRvIHRoZSByZXNlYXJjaCBxdWVzdGlvbi4KCiMjICoqU3RlcCA0OiBNb2RlbCBEZXZlbG9wbWVudC9JbnRlcnByZXRhdGlvbioqCgotICAgSXRlcmF0aXZlbHkgYnVpbGQgbW9kZWxzIChzaW1wbGUgdG8gY29tcGxleCkuCgotICAgSW50ZXJwcmV0IHRoZSByZXN1bHRzIG9mIGVhY2ggbW9kZWwgdG8gZXhwbGFpbiB3aHkgYSBtb3JlIGNvbXBsZXggbW9kZWwgb3IgZGlmZmVyZW50IG1vZGVsbGluZyBzdHJhdGVneSBtYXkgYmUgcmVxdWlyZWQuCgojIyAqKlN0ZXAgNTogTW9kZWwgRXZhbHVhdGlvbioqCgotICAgRXZhbHVhdGlvbiB0aGUgZmluYWwgbW9kZWwocyksIGRlc2NyaWJpbmcgbW9kZWwgZXJyb3JzLCBtb2RlbCBhY2N1cmFjeSwgcmVzaWR1YWxzLCBhc3N1bXB0aW9ucywgZXRjLgoKIyMgKipTdGVwIDY6IENvbW11bmljYXRpb24gb2YgUmVzdWx0cyoqCgotICAgQ29tbXVuaWNhdGUgdGhlIHJlc3VsdHMgb2YgdGhlIGZpbmFsIG1vZGVsKHMpIGluIGEgY2xlYXIgbWFubmVyIHVzaW5nIHZpc3VhbGl6YXRpb25zIGFuZCBsYW5ndWFnZSB0aGF0IGlzIHVuZGVyc3RhbmRhYmxlIHRvIHRoZSBlbmQgdXNlci4KCi0gICBFeHBsYWluIHdoZXRoZXIgb3Igbm90IHRoZSByZXNlYXJjaCBxdWVzdGlvbiBoYXMgYmVlbiBhbnN3ZXJlZC4KCi0gICBDbGVhcmx5IGRpc2N1c3MgYW55IGxpbWl0YXRpb25zIG9mIHRoZSBhbmFseXNpcy4KCi0gICBPZmZlciBzdWdnZXN0aW9ucyBmb3IgZnV0dXJlIGFuYWx5c2lzIG9yIHBlcmhhcHMgb3RoZXIgZGF0YSBzZXRzIHRoYXQgbWF5IGJlIGluY29ycG9yYXRlZCB0byBwcm92aWRlIGEgbW9yZSBjb250ZXh0dWFsIGFuc3dlciB0byB0aGUgcmVzZWFyY2ggcXVlc3Rpb24uCgojIyMgCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRklUNTE0NyBERVAgUzIgMjAyMiAtIDMyOTgwNTIzIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIHRvYzogeWVzCi0tLQoKIyBGSVQ1MTQ3IFx8IERhdGEgRXhwbG9yYXRpb24gUHJvamVjdCAKCiMjIFN0dWR5IG9mIEFpcmJuYiBVc2VyIFByZWZlcmVuY2VzIGluIENoaWxlIGFuZCBBdXN0cmFsaWEKCj4gVGhlIG9iamVjdGl2ZSBpcyB0byBwcm92aWRlIGFuIGVhc3kgdG8gZm9sbG93IGZyYW1ld29yayBmb3IgYW5hbHlzaXMgdGhhdCBhbGxvd3MgdGhlIGFuYWx5c3Qgb3IgUGhEIHN0dWRlbnQgdG8gd2FsayB0aHJvdWdoIHRoZWlyIGVudGlyZSBhcHByb2FjaCBpbiBhIHN0ZXAtYnktc3RlcCBtYW5uZXIgd2l0aCB0aGVpciBjb2xsZWFndWVzIG9yIFBoRCBzdXBlcnZpc29ycy4KCj4gSW4gZWFjaCBvZiB0aGUgNi1zdGVwcywgdGhlIHJlc2VhcmNoZXIgaXMgdG8gcHJvdmlkZSB0aGVpciBjb2RlLCBvdXRwdXRzIGZvciB0aGUgY29kZSwgYW5kIGFueSBjb21tZW50cy90aG91Z2h0cyB0aGF0IG1heSBoZWxwIHRoZSByZWFkZXIgaW50ZXJwcmV0IHRoZSBhcHByb2FjaCB0aGF0IHdhcyB0YWtlbi4KCiMjICoqMS4gSW50cm9kdWN0aW9uKioKCkZvciB0aGlzIHN0dWR5IEkndmUgY2hvc2VuIHR3byBjaXRpZXMgdGhhdCBJJ20gaGlnaGx5IGZhbWlsaWFyIHdpdGg6CioqU2FudGlhZ28gZGUgQ2hpbGUqKiwgd2hlcmUgSSBsaXZlZCBtb3N0IG9mIG15IGxpZmUgdXAgdW50aWwgdGhlIGFnZSBvZiAyNjsgYW5kCioqTWVsYm91cm5lLCBBdXN0cmFsaWEqKiB3aGVyZSBJXCd2ZSBsaXZlZCBmb3IgdGhlIHBhc3QgNyB5ZWFycy4gQm90aCBvZiB0aGlzIGNpdGllcyBhcmUgdXB3YXJkcyBvZiA1IG1pbGxpb24gcGVvcGxlIGFuZCBhcmUgdmlzaXRlZCBieSB0aG91c2FuZCBvZiB0b3VyaXN0cyBldmVyeSB5ZWFyLgoKQXMgeW91IHdpbGwgc2VlIGluIG5leHQgc2VjdGlvbiwgdGhlIGRhdGEgc2V0cyBhcmUgbGFyZ2UgZW5vdWdoIHRvIGJlCnN0dWRpZWQgb24gdGhlaXIgb3duLCBidXQgSSBzZWUgYW4gb3Bwb3J0dW5pdHkgdG8gcGVyZm9ybSBpbnNpZ2h0ZnVsIHJlc2VhcmNoIGJ5IGNvbXBhcmluZyBhZGRpdGlvbmFsIGRlc3RpbmF0aW9ucyBpbiBBdXN0cmFsaWEgc3VjaCBhcyB0aGUgTm9ydGhlcm4gUml2ZXJzIHJlZ2lvbiBpbiBOZXcgU291dGggV2FsZXMgYW5kIEJhcndvbiBTb3V0aCBXZXN0IGluIFZpY3RvcmlhLiBCb3RoIG9mIHRoZXNlIGFyZWFzIGFyZSBwb3B1bGFyIGhvbGlkYXkgZGVzdGluYXRpb25zLCBhbmQgaXQgd291bGQgYmUgaW50ZXJlc3RpbmcgdG8gY29udHJhc3QgdGhlaXIgY2hhcmFjdGVyaXN0aWNzIHRvIGJpZ2dlciBjaXRpZXMgaW4gdGhlIHN0dWR5LiBBcyBhIHJlc3VsdCBvZiB0aGlzIGFuYWx5c2lzLCBJIGhvcGUgdGhlIGZpbmRpbmdzIG1heSBiZSBvZiB1c2UgYXMgYSBzZXQgb2YgZnVuZGFtZW50YWwgaW5zaWdodHMgdG8gYm90aCBpbnZlc3RvcnMgc2Vla2luZyB0byB1bmRlcnN0YW5kIHRoZSBzaG9ydCB0ZXJtIHJlbnRhbCBtYXJrZXRzLCBvciBmb3IgcHVibGljIHBvbGljeSBtYWtlcnMgdG8gcHJvdmlkZSBndWlkYW5jZSBvbiByZWd1bGF0aW9uIG9yIGluZnJhc3RydWN0dXJlIGRlY2lzaW9ucy4KCiMjIyAxLjEgUmVzZWFyY2ggUXVlc3Rpb24gMTogIENvbW1vbiBmZWF0dXJlcyBvZiBwb3B1bGFyIGxpc3RpbmdzIGFjcm9zcyBjaXRpZXMgaW4gdGhlIHN0dWR5Cgo+IFdoYXQgYXJlIHNvbWUgb2YgdGhlIGNvbW1vbiBmZWF0dXJlcyBvZiBwb3B1bGFyIGxpc3RpbmdzIGluIHRoZSBjaXRpZXMgaW5jbHVkZWQgaW4gdGhlIHN0dWR5PyBGb3IgZXhhbXBsZSwgY2FuIHdlIHNlZSBjbHVzdGVycyBvZiBwb3B1bGFyaXR5IGluIGNlcnRhaW4gYXJlYXMgb2YgdGhlIGNpdHkgdGhhdCBhcmUgbmVhciB0aGUgQ0JEIG9yIG5lYXIgYmFycyBhbmQgcmVzdGF1cmFudHM/CgojIyMgMS4yIFJlc2VhcmNoIFF1ZXN0aW9uIDI6ICBDb21tb24gZmVhdHVyZXMgb2YgcG9wdWxhciBsaXN0aW5ncyBhY3Jvc3MgY2l0aWVzIGluIHRoZSBzdHVkeQoKPiBBcmUgdGhlcmUgYW55IHNpZ25pZmljYW50IGRpZmZlcmVuY2VzIG9uIHRoZXNlIGZlYXR1cmVzIGFjcm9zcyBTYW50aWFnbyBhbmQgTWVsYm91cm5lIHN1YnVyYnM/IEZvciBleGFtcGxlLCBhcmUgdGhlIHBvcHVsYXIgYXJlYXMgaW4gU2FudGlhZ28gbW9yZSBjb25jZW50cmF0ZWQgY29tcGFyZWQgdG8gTWVsYm91cm5lPwoKIyMjIDEuMyBSZXNlYXJjaCBRdWVzdGlvbiAzOiAgSG93IGhhdmUgdGhlIGxpc3RpbmcgcHJpY2VzIGV2b2x2ZWQgZHVyaW5nIHRoZSBsYXN0IHllYXIgYWNyb3NzIGFsbCBjaXRpZXMgaW4gdGhlIHN0dWR5PwoKKFRCQykKClByb3ZpZGUgYW55IGFkZGl0aW9uYWwgdGhvdWdodHMgYXJvdW5kIHRoZSByZXNlYXJjaCBxdWVzdGlvbgoKLSAgIEh5cG90aGVzaXMKCi0gICBQb3RlbnRpYWwgaXNzdWVzIG9yIGNoYWxsZW5nZXMKCi0gICBQb3RlbnRpYWwgbGltaXRhdGlvbnMKCi0gICBFdGMuCgojIyMgMS40IEVudmlyb25tZW50IFNldHVwCgpUaGUgZm9sbG93aW5nIGxpYnJhcmllcyB3aWxsIGJlIHVzZWQgZm9yIHRoaXMgcHJvamVjdDoKCmBgYHtyIGxpYnJhcmllcywgaW5jbHVkZT1GQUxTRX0KbGlicmFyeSh0aWR5dmVyc2UpCiMgb3RoZXIgbGlicmFyaWVzIChwb3RlbnRpYWxseSkKYGBgCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCiMjICoqMi4gRGF0YSBDb2xsZWN0aW9uIGFuZCBNZWFzdXJlbWVudCBTdHJhdGVneSoqCgojIyMgMi4xIERlc2NyaXB0aW9uIG9mIHRoZSBkYXRhCgpUaGUgZGF0YSBzZXQgY29udGFpbnMgaW5mb3JtYXRpb24gZnJvbSBbSW5zaWRlIEFpcmJuYl0oaHR0cDovL2luc2lkZWFpcmJuYi5jb20vZ2V0LXRoZS1kYXRhLykgYWJvdXQgZm91ciBkaWZmZXJlbnQgcmVnaW9uczoKCjEuICBNZWxib3VybmUsIEF1c3RyYWxpYQoyLiAgTm9ydGhlcm4gUml2ZXJzLCBBdXN0cmFsaWEKMy4gIFRhc21hbmlhLCBBdXN0cmFsaWEKNC4gIFNhbnRpYWdvLCBDaGlsZQoKVGhlIGZvbGxvd2luZyBpbmZvcm1hdGlvbiBpcyBwcm92aWRlIGZvciBlYWNoIG9uZSBvZiB0aGVzZSBjaXRpZXM6CgotICAgRGV0YWlsZWQgbGlzdGluZ3MgZGF0YQoKLSAgIERldGFpbGVkIENhbGVuZGFyIGRhdGEKCi0gICBEZXRhaWxlZCBSZXZpZXcgZGF0YQoKLSAgIEdlb0pTT04gZmlsZQoKLSAgIE90aGVyLi4uIChUQkMpCgpJbiBhZGRpdGlvbiwgdGhlIHN0dWR5IHdpbGwgdXNlIHRoZSBsYXN0IGZvdXIgYXZhaWxhYmxlIHF1YXJ0ZXJseSBpbmZvcm1hdGlvbiByZWxlYXNlZCBmb3IgZWFjaCBsb2NhdGlvbi4KCiMjIyAyLjIgRGF0YSBzb3VyY2VzCgpUaGUgZm9sbG93aW5nIHN0ZXBzIHdpbGwgZ28gdGhyb3VnaCBsb2FkaW5nIHRoZSBkYXRhIHRoYXQgd2lsbCBiZSB1c2VkIHRocm91Z2hvdXQgdGhlIHByb2plY3QuCgojIyMjIExpc3RpbmdzCgpGaXJzdGx5IHdlIHdpbGwgbG9hZCBNZWxib3VybmUncyBxdWFydGVybHkgbGlzdGluZyBpbmZvcm1hdGlvbiBpbnRvIGluZGl2aWR1YWwgZGF0YSBmcmFtZXMgYW5kIGNvbWJpbmUgdGhlbSBmb3IgaW5zcGVjdGlvbi4KCmBgYHtyfQojTG9hZGluZyBNZWxib3VybmUgbGlzdGluZ3MKI2p1bmUgMjAyMiBsaXN0aW5ncwptZWwubGlzdGluZ3MuMjIwNiA8LSByZWFkX2NzdignZGF0YS9NZWxib3VybmUvMjAyMl8wNi9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKQojbWFyY2ggMjAyMiBsaXN0aW5ncwptZWwubGlzdGluZ3MuMjIwMyA8LSByZWFkX2NzdignZGF0YS9NZWxib3VybmUvMjAyMl8wMy9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKQojICNkZWNlbWJlciAyMDIxIGxpc3RpbmdzCm1lbC5saXN0aW5ncy4yMTEyIDwtIHJlYWRfY3N2KCdkYXRhL01lbGJvdXJuZS8yMDIxXzEyL2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpCiMgI3NlcHRlbWJlciAyMDIxIGxpc3RpbmdzCm1lbC5saXN0aW5ncy4yMTA5IDwtIHJlYWRfY3N2KCdkYXRhL01lbGJvdXJuZS8yMDIxXzA5L2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpCmBgYAoKSXQncyByZWFzb25hYmxlIHRvIGV4cGVjdCB0aGV5IGFsbCBjb250YWluIHRoZSBzYW1lIG51bWJlciBvZiB2YXJpYWJsZXMsIGFzIHRoZXkgY29tZSBmcm9tIHRoZSBzYW1lIGRhdGEgc291cmNlLgoKYGBge3J9CiMgY29tYmluZSBkYXRhIHNldHMKbWVsYm91cm5lLmxpc3RpbmdzIDwtIGJpbmRfcm93cyhtZWwubGlzdGluZ3MuMjIwNixtZWwubGlzdGluZ3MuMjIwMyxtZWwubGlzdGluZ3MuMjExMixtZWwubGlzdGluZ3MuMjEwOSwgLmlkID0gImlkIikKYGBgCgpXZSB3aWxsIGZvbGxvdyB0aGUgc2FtZSBwcm9jZXNzIGZvciB0aGUgb3RoZXIgbG9jYXRpb25zOgoKYGBge3J9CiNMb2FkaW5nIFNhbnRpYWdvIGxpc3RpbmdzCiNqdW5lIDIwMjIgbGlzdGluZ3MKc2NsLmxpc3RpbmdzLjIyMDYgPC0gcmVhZF9jc3YoJ2RhdGEvU2FudGlhZ28vMjAyMl8wNi9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKQojbWFyY2ggMjAyMiBsaXN0aW5ncwpzY2wubGlzdGluZ3MuMjIwMyA8LSByZWFkX2NzdignZGF0YS9TYW50aWFnby8yMDIyXzAzL2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpCiMgI2RlY2VtYmVyIDIwMjEgbGlzdGluZ3MKc2NsLmxpc3RpbmdzLjIxMTIgPC0gcmVhZF9jc3YoJ2RhdGEvU2FudGlhZ28vMjAyMV8xMi9saXN0aW5ncy5jc3YuZ3onLCBzaG93X2NvbF90eXBlcyA9IEZBTFNFKQojICNzZXB0ZW1iZXIgMjAyMSBsaXN0aW5ncwpzY2wubGlzdGluZ3MuMjEwOSA8LSByZWFkX2NzdignZGF0YS9TYW50aWFnby8yMDIxXzA5L2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpCiMgY29tYmluZSBkYXRhIHNldHMKc2NsLmxpc3RpbmdzIDwtIGJpbmRfcm93cyhzY2wubGlzdGluZ3MuMjIwNixzY2wubGlzdGluZ3MuMjIwMyxzY2wubGlzdGluZ3MuMjExMixzY2wubGlzdGluZ3MuMjEwOSwgLmlkID0gImlkIikKCmBgYAoKYGBge3J9CiNMb2FkaW5nICBUYXNtYW5pYSBsaXN0aW5ncwp0YXMubGlzdGluZ3MuMjIwNiA8LSByZWFkX2NzdignZGF0YS9UYXNtYW5pYS8yMDIyXzA2L2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpCiNtYXJjaCAyMDIyIGxpc3RpbmdzCnRhcy5saXN0aW5ncy4yMjAzIDwtIHJlYWRfY3N2KCdkYXRhL1Rhc21hbmlhLzIwMjJfMDMvbGlzdGluZ3MuY3N2Lmd6Jywgc2hvd19jb2xfdHlwZXMgPSBGQUxTRSkKIyAjZGVjZW1iZXIgMjAyMSBsaXN0aW5ncwp0YXMubGlzdGluZ3MuMjExMiA8LSByZWFkX2NzdignZGF0YS9UYXNtYW5pYS8yMDIxXzEyL2xpc3RpbmdzLmNzdi5neicsIHNob3dfY29sX3R5cGVzID0gRkFMU0UpCiMgI3NlcHRlbWJlciAyMDIxIGxpc3RpbmdzCnRhcy5saXN0aW5ncy4yMTA5IDwtIHJlYWRfY3N2KCdkYXRhL1Rhc21hbmlhLzIwMjFfMDkvbGlzdGluZ3MuY3N2Lmd6Jywgc2hvd19jb2xfdHlwZXMgPSBGQUxTRSkKIyBjb21iaW5lIGRhdGEgc2V0cwp0YXMubGlzdGluZ3MgPC0gYmluZF9yb3dzKHRhcy5saXN0aW5ncy4yMjA2LHRhcy5saXN0aW5ncy4yMjAzLHRhcy5saXN0aW5ncy4yMTEyLHRhcy5saXN0aW5ncy4yMTA5LCAuaWQgPSAiaWQiKQpgYGAKClwjIwoKIyMjIyBTdHJ1Y3R1cmUgb2YgdGhlIGRhdGEKCiMjIyMgRGF0YSBpc3N1ZXMgKG1pc3NpbmcgZGF0YSwgbWVzc3kgZGF0YSwgZXRjLikKCiMjIyMgQ29sbGVjdGlvbi9NZWFzdXJlbWVudAoKLSAgIElmIGRhdGEgbmVlZHMgdG8gYmUgY29sbGVjdGVkLCB3aGF0IGFyZSB0aGUgbWVhc3VyZW1lbnRzIGJlaW5nIHRha2VuIChjbGVhcmx5IGRlZmluZSB0aGUgcHJvY2VkdXJlcyBhbmQgc3RhbmRhcmRpemF0aW9uKT8KCi0gICBBcmUgdGhlIG1lYXN1cmVtZW50cyB2YWxpZCBhbmQgcmVsaWFibGUgKGlzIHRoZXJlIHBvdGVudGlhbGx5IGEgbmVlZCB0byBhZGQgYSByZXNlYXJjaCBzdGVwIGhlcmUgYW5kIGNvbmR1Y3RpbmcgeW91ciBvd24gdmFsaWRpdHkvcmVsaWFiaWxpdHkgc3R1ZHkgYmVmb3JlIHByb2NlZWRpbmcpPwoKIyMjIyBEYXRhIENsZWFuaW5nCgotICAgV2hhdCBwcmUtcHJvY2Vzc2luZyBzdGVwcyB3ZXJlIHRha2VuPwoKLSAgIENsZWFybHkgd2FsayB0aHJvdWdoIHRoZSBkYXRhIGNsZWFubmluZyBwcm9jZXNzLgoKLSAgIElzIGFueSBkYXRhIG1pc3NpbmcsIGlmIHNvIGhvdyBtdWNoPwoKLSAgIERlc2NyaWJlIGFueSBpbXB1dGF0aW9uIHByb2Nlc3MgZm9yIG1pc3NpbmcgZGF0YS4KCi0gICBJZiBhbnkgZGF0YSB3YXMgcmVtb3ZlZCBwcmlvciB0byBhbmFseXNpcyBleHBsYWluIHdoeS4KCiMjICoqU3RlcCAzOiBWaXN1YWxpemUgJiBTdW1tYXJpemUgRGF0YSoqCgotICAgT25jZSBkYXRhIGhhcyBiZWVuIGNvbGxlY3RlZCBhbmQgY2xlYW5lZCwgcHJvdmlkZSBhbiBvdmVydmlldyBvZiB0aGUgZGF0YSB1c2luZyBzdW1tYXJpemUgc3RhdGlzdGljcyBhbmQgdmlzdWFscy4KCi0gICBPZmZlciBpbnRlcnByZXRhdGlvbiBvZiB2aXN1YWxzIHRoYXQgbWF5IGhlbHAgZ3VpZGUgdGhlIG1vZGVsIGJ1aWxkaW5nIHByb2Nlc3Mgb3IgZ2VuZXJhdGUgZGlzY3Vzc2lvbiBhYm91dCBhbnkgdW5kZXJseWluZyB0cmVuZHMgaW4gdGhlIGRhdGEgc3BlY2lmaWMgdG8gdGhlIHJlc2VhcmNoIHF1ZXN0aW9uLgoKIyMgKipTdGVwIDQ6IE1vZGVsIERldmVsb3BtZW50L0ludGVycHJldGF0aW9uKioKCi0gICBJdGVyYXRpdmVseSBidWlsZCBtb2RlbHMgKHNpbXBsZSB0byBjb21wbGV4KS4KCi0gICBJbnRlcnByZXQgdGhlIHJlc3VsdHMgb2YgZWFjaCBtb2RlbCB0byBleHBsYWluIHdoeSBhIG1vcmUgY29tcGxleCBtb2RlbCBvciBkaWZmZXJlbnQgbW9kZWxsaW5nIHN0cmF0ZWd5IG1heSBiZSByZXF1aXJlZC4KCiMjICoqU3RlcCA1OiBNb2RlbCBFdmFsdWF0aW9uKioKCi0gICBFdmFsdWF0aW9uIHRoZSBmaW5hbCBtb2RlbChzKSwgZGVzY3JpYmluZyBtb2RlbCBlcnJvcnMsIG1vZGVsIGFjY3VyYWN5LCByZXNpZHVhbHMsIGFzc3VtcHRpb25zLCBldGMuCgojIyAqKlN0ZXAgNjogQ29tbXVuaWNhdGlvbiBvZiBSZXN1bHRzKioKCi0gICBDb21tdW5pY2F0ZSB0aGUgcmVzdWx0cyBvZiB0aGUgZmluYWwgbW9kZWwocykgaW4gYSBjbGVhciBtYW5uZXIgdXNpbmcgdmlzdWFsaXphdGlvbnMgYW5kIGxhbmd1YWdlIHRoYXQgaXMgdW5kZXJzdGFuZGFibGUgdG8gdGhlIGVuZCB1c2VyLgoKLSAgIEV4cGxhaW4gd2hldGhlciBvciBub3QgdGhlIHJlc2VhcmNoIHF1ZXN0aW9uIGhhcyBiZWVuIGFuc3dlcmVkLgoKLSAgIENsZWFybHkgZGlzY3VzcyBhbnkgbGltaXRhdGlvbnMgb2YgdGhlIGFuYWx5c2lzLgoKLSAgIE9mZmVyIHN1Z2dlc3Rpb25zIGZvciBmdXR1cmUgYW5hbHlzaXMgb3IgcGVyaGFwcyBvdGhlciBkYXRhIHNldHMgdGhhdCBtYXkgYmUgaW5jb3Jwb3JhdGVkIHRvIHByb3ZpZGUgYSBtb3JlIGNvbnRleHR1YWwgYW5zd2VyIHRvIHRoZSByZXNlYXJjaCBxdWVzdGlvbi4KCiMjIyAK</div>
 
 
 
