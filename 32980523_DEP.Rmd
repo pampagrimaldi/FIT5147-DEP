@@ -5,7 +5,7 @@ output:
     toc: yes
 ---
 
-# FIT5147 \| Data Exploration Project 
+# FIT5147 \| Data Exploration Project
 
 ## Study of Airbnb User Preferences in Chile and Australia
 
@@ -15,22 +15,19 @@ output:
 
 ## **1. Introduction**
 
-For this study I've chosen two cities that I'm highly familiar with:
-**Santiago de Chile**, where I lived most of my life up until the age of 26; and
-**Melbourne, Australia** where I\'ve lived for the past 7 years. Both of this cities are upwards of 5 million people and are visited by thousand of tourists every year.
+For this study I've chosen two cities that I'm highly familiar with: **Santiago de Chile**, where I lived most of my life up until the age of 26; and **Melbourne, Australia** where I've lived for the past 7 years. Both of this cities are upwards of 5 million people and are visited by thousand of tourists every year.
 
-As you will see in next section, the data sets are large enough to be
-studied on their own, but I see an opportunity to perform insightful research by comparing additional destinations in Australia such as the Northern Rivers region in New South Wales and Barwon South West in Victoria. Both of these areas are popular holiday destinations, and it would be interesting to contrast their characteristics to bigger cities in the study. As a result of this analysis, I hope the findings may be of use as a set of fundamental insights to both investors seeking to understand the short term rental markets, or for public policy makers to provide guidance on regulation or infrastructure decisions.
+As you will see in next section, the data sets are large enough to be studied on their own, but I see an opportunity to perform insightful research by comparing additional destinations in Australia such as the Northern Rivers region in New South Wales and Barwon South West in Victoria. Both of these areas are popular holiday destinations, and it would be interesting to contrast their characteristics to bigger cities in the study. As a result of this analysis, I hope the findings may be of use as a set of fundamental insights to both investors seeking to understand the short term rental markets, or for public policy makers to provide guidance on regulation or infrastructure decisions.
 
-### 1.1 Research Question 1:  Common features of popular listings across cities in the study
+### 1.1 Research Question 1: Common features of popular listings across cities in the study
 
 > What are some of the common features of popular listings in the cities included in the study? For example, can we see clusters of popularity in certain areas of the city that are near the CBD or near bars and restaurants?
 
-### 1.2 Research Question 2:  Common features of popular listings across cities in the study
+### 1.2 Research Question 2: Common features of popular listings across cities in the study
 
 > Are there any significant differences on these features across Santiago and Melbourne suburbs? For example, are the popular areas in Santiago more concentrated compared to Melbourne?
 
-### 1.3 Research Question 3:  How have the listing prices evolved during the last year across all cities in the study?
+### 1.3 Research Question 3: How have the listing prices evolved during the last year across all cities in the study?
 
 (TBC)
 
@@ -233,4 +230,8 @@ ggplot() +
 
 -   Offer suggestions for future analysis or perhaps other data sets that may be incorporated to provide a more contextual answer to the research question.
 
-### 
+------------------------------------------------------------------------
+
+## References
+
+[1] [Plot polygons from GeoJSON file to leaflet map](https://www.youtube.com/watch?v=hGzlvSIhvIc)
