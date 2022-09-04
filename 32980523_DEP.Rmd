@@ -5,6 +5,24 @@ output:
     toc: yes
 ---
 
+Project notes
+
+-   Max 3 pages for Intro, Data Wrangling and Data Checking
+
+-   3 pages for Data Exploration
+
+-   Conclussion and reflection (1)
+
+-   Bibliography - 1.
+
+-   For data checking, write everything. Specially, consider tricky challenges that need to be considered
+
+-   Use grammarly.
+
+Questions for Project
+
+-   
+
 # FIT5147 \| Data Exploration Project
 
 ## Study of Airbnb User Preferences in Chile and Australia
@@ -51,8 +69,10 @@ library(tidyverse)
 # for geospatial data
 library(broom)
 #install.packages("geojsonio")
+library(ggmap)
 library(mapproj)
 library(geojsonio)
+library(ggmap)
 # for plotting
 library(ggplot2)
 # other libraries (potentially)
@@ -61,7 +81,7 @@ library(ggplot2)
 
 ------------------------------------------------------------------------
 
-## **2. Data Collection and Measurement Strategy**
+## **2. Data Collection and Measurement Strategy (Data Wrangling - Data Checking)**
 
 ### 2.1 Description of the data
 
@@ -92,80 +112,42 @@ The following steps will go through loading the data that will be used throughou
 
 #### Listings
 
-Firstly we will load Melbourne's quarterly listing information into individual data frames and combine them for inspection.
-
-```{r}
-#Loading Melbourne listings
-#june 2022 listings
-mel.listings.2206 <- read_csv('data/Melbourne/2022_06/listings.csv.gz', show_col_types = FALSE)
-#march 2022 listings
-mel.listings.2203 <- read_csv('data/Melbourne/2022_03/listings.csv.gz', show_col_types = FALSE)
-# #december 2021 listings
-mel.listings.2112 <- read_csv('data/Melbourne/2021_12/listings.csv.gz', show_col_types = FALSE)
-# #september 2021 listings
-mel.listings.2109 <- read_csv('data/Melbourne/2021_09/listings.csv.gz', show_col_types = FALSE)
-```
-
-It's reasonable to expect they all contain the same number of variables, as they come from the same data source.
+Intro to listings information..
 
 ```{r}
 # combine data sets
-mel.listings <- bind_rows(mel.listings.2206,mel.listings.2203,mel.listings.2112,mel.listings.2109, .id = "id")
-```
-
-We will follow the same process for the other locations:
-
-```{r}
-#Loading Santiago listings
-#june 2022 listings
-scl.listings.2206 <- read_csv('data/Santiago/2022_06/listings.csv.gz', show_col_types = FALSE)
-#march 2022 listings
-scl.listings.2203 <- read_csv('data/Santiago/2022_03/listings.csv.gz', show_col_types = FALSE)
-# #december 2021 listings
-scl.listings.2112 <- read_csv('data/Santiago/2021_12/listings.csv.gz', show_col_types = FALSE)
-# #september 2021 listings
-scl.listings.2109 <- read_csv('data/Santiago/2021_09/listings.csv.gz', show_col_types = FALSE)
-# combine data sets
-scl.listings <- bind_rows(scl.listings.2206,scl.listings.2203,scl.listings.2112,scl.listings.2109, .id = "id")
+all.listings <- list.files(recursive = TRUE, pattern="*listings.csv.gz") %>%
+  map_df(~read_csv(.,show_col_types = FALSE))
 
 ```
 
-```{r}
-#Loading  Tasmania listings
-tas.listings.2206 <- read_csv('data/Tasmania/2022_06/listings.csv.gz', show_col_types = FALSE)
-#march 2022 listings
-tas.listings.2203 <- read_csv('data/Tasmania/2022_03/listings.csv.gz', show_col_types = FALSE)
-# #december 2021 listings
-tas.listings.2112 <- read_csv('data/Tasmania/2021_12/listings.csv.gz', show_col_types = FALSE)
-# #september 2021 listings
-tas.listings.2109 <- read_csv('data/Tasmania/2021_09/listings.csv.gz', show_col_types = FALSE)
-# combine data sets
-tas.listings <- bind_rows(tas.listings.2206,tas.listings.2203,tas.listings.2112,tas.listings.2109, .id = "id")
-```
-
-```{r}
-#Loading  Northern Rivers listings
-nr.listings.2206 <- read_csv('data/Northern_Rivers/2022_06/listings.csv.gz', show_col_types = FALSE)
-#march 2022 listings
-nr.listings.2203 <- read_csv('data/Northern_Rivers/2022_03/listings.csv.gz', show_col_types = FALSE)
-# #december 2021 listings
-nr.listings.2112 <- read_csv('data/Northern_Rivers/2021_12/listings.csv.gz', show_col_types = FALSE)
-# #september 2021 listings
-nr.listings.2109 <- read_csv('data/Northern_Rivers/2021_09/listings.csv.gz', show_col_types = FALSE)
-# combine data sets
-nr.listings <- bind_rows(tas.listings.2206,tas.listings.2203,tas.listings.2112,tas.listings.2109, .id = "id")
-```
-
-Combine all listings
-
-```{r}
-# listings dataset
-all.listings <- bind_rows(mel.listings,scl.listings,nr.listings,tas.listings, .id = "id")
-```
+Some description about listings in the project.
 
 #### Reviews
 
-### Geospatial ata
+Intro to review information
+
+```{r}
+# combine data sets
+all.calendar <- list.files(recursive = TRUE, pattern="*calendar.csv.gz") %>%
+  map_df(~read_csv(.,show_col_types = FALSE))
+```
+
+Some description about the reviews in the project
+
+#### Calendar
+
+Intro to calendar information
+
+```{r}
+# combine data sets
+all.reviews <- list.files(recursive = TRUE, pattern="*reviews.csv.gz") %>%
+  map_df(~read_csv(.,show_col_types = FALSE))
+```
+
+Some description about results
+
+### Geospatial Data
 
 Loading the maps
 
