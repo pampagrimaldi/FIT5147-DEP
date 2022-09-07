@@ -5,24 +5,6 @@ output:
     toc: yes
 ---
 
-Project notes
-
--   Max 3 pages for Intro, Data Wrangling and Data Checking
-
--   3 pages for Data Exploration
-
--   Conclussion and reflection (1)
-
--   Bibliography - 1.
-
--   For data checking, write everything. Specially, consider tricky challenges that need to be considered
-
--   Use grammarly.
-
-Questions for Project
-
--   
-
 # FIT5147 \| Data Exploration Project
 
 ## Study of Airbnb User Preferences in Chile and Australia
@@ -79,19 +61,19 @@ some text
 
 The following packages will be used for this project:
 
-| Package name | Category               | Comments |
-|--------------|------------------------|----------|
-| tidyverse    | General Data Analysis  |          |
-| dplyr        | General data analysis  |          |
-| broom        | Geo-spatial Analysis   |          |
-| ggmap        | Geo-spatial Analysis   |          |
-| mapproj      | Geo-spatial Analysis   |          |
-| geogjsonio   | Geo-spatial Analysis   |          |
-| ggmap        | Geo-spatial Analysis   |          |
-| ggplot2      | General visualisations |          |
-| janitor      | Data Cleaning          |          |
-| naniar       | Data Cleaning          |          |
-| UpSetR       | Data Cleaning          |          |
+| Package name | Category               |
+|--------------|------------------------|
+| `tidyverse`  | General Data Analysis  |
+| `dplyr`      | General data analysis  |
+| `broom`      | Geo-spatial Analysis   |
+| `ggmap`      | Geo-spatial Analysis   |
+| `mapproj`    | Geo-spatial Analysis   |
+| `geogjsonio` | Geo-spatial Analysis   |
+| `ggmap`      | Geo-spatial Analysis   |
+| `ggplot2`    | General visualizations |
+| `janitor`    | Data Cleaning          |
+| `naniar`     | Data Cleaning          |
+| `UpSetR`     | Data Cleaning          |
 
 : Selected libraries
 
@@ -105,6 +87,8 @@ library(ggmap)
 library(mapproj)
 library(geojsonio)
 library(ggmap)
+library(rgdal)
+library(leaflet)
 # for plotting
 library(ggplot2)
 # other libraries (potentially)
@@ -113,6 +97,7 @@ library(janitor) # data cleaning
 library(naniar)
 library(UpSetR)
 library(dplyr)
+library(sf)
 ```
 
 ------------------------------------------------------------------------
@@ -133,7 +118,7 @@ We will also use *four sets* of quarterly produced data for each one of the regi
 A summary of all the information is provided in the table below:
 
 | Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
-|----------|-----------------------------------------------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------|------------|------------|-------------------------------------|
 | Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
 | Calendar |                                                           |                    |                                                                                                                                                     |
 | Reviews  |                                                           |                    |                                                                                                                                                     |
@@ -314,7 +299,93 @@ all.listings$price <- parse_number(all.listings$price)
 
 ### Listings
 
-Lets visualize the listing ratings by city
+Lets visualize the listing ratings by city. Firstly, we will visualize a clustered representation of the listings with leaflet to help set the lay of the land across all cities.
+
+**Lay of the Land**
+
+```{r}
+#delete
+all.listings  %>% 
+  filter(neighbourhood_group.new == "Tasmania") %>% distinct(last_scraped)
+```
+
+#### Melbourne
+
+```{r echo=FALSE}
+#Reading Listings Data
+#load data frame (filtered by city)
+listings.mel <- all.listings %>% 
+  filter(last_scraped == "2022-06-06") %>% 
+  filter(neighbourhood_group.new == "Melbourne")
+
+#Creating Listings across N
+leaflet(listings.mel) %>%
+  addTiles() %>%
+  addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.mel$name , "<br/><b> Host Name: </b>", listings.mel$host_name, "<br> <b> Price: </b>", listings.mel$price, "<br/><b> Room Type: </b>", listings.mel$room_type, "<br/><b> Property Type: </b>", listings.mel$property_type
+                 )) %>% 
+  setView(144.94,-37.84, zoom = 12)
+```
+
+#### Santiago
+
+```{r echo=FALSE}
+#Reading Listings Data
+#load data frame (filtered by city)
+listings.tas <- all.listings %>% 
+  filter(last_scraped == "2022-06-22") %>% 
+  filter(neighbourhood_group.new == "Santiago")
+
+#Creating Listings across N
+leaflet(listings.scl) %>%
+  addTiles() %>%
+  addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.scl$name , "<br/><b> Host Name: </b>", listings.scl$host_name, "<br> <b> Price: </b>", listings.scl$price, "<br/><b> Room Type: </b>", listings.scl$room_type, "<br/><b> Property Type: </b>", listings.scl$property_type
+                 )) %>% 
+  setView(-70.645348,-33.459229, zoom = 12)
+```
+
+#### Northern Rivers
+
+```{r echo=FALSE}
+#Reading Listings Data
+#load data frame (filtered by city)
+listings.nr <- all.listings %>% 
+  filter(last_scraped == "2022-06-11") %>% 
+  filter(neighbourhood_group.new == "Northern Rivers")
+
+#Creating Listings across N
+leaflet(listings.nr) %>%
+  addTiles() %>%
+  addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.nr$name , "<br/><b> Host Name: </b>", listings.nr$host_name, "<br> <b> Price: </b>", listings.nr$price, "<br/><b> Room Type: </b>", listings.nr$room_type, "<br/><b> Property Type: </b>", listings.nr$property_type
+                 )) %>% 
+  setView(153.6,-28.6, zoom = 8)
+```
+
+#### Tasmania
+
+```{r echo=FALSE}
+#Reading Listings Data
+#load data frame (filtered by city)
+listings.tas <- all.listings %>% 
+  filter(last_scraped == "2022-06-05") %>% 
+  filter(neighbourhood_group.new == "Tasmania")
+
+#Creating Listings across N
+leaflet(listings.tas) %>%
+  addTiles() %>%
+  addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.tas$name , "<br/><b> Host Name: </b>", listings.tas$host_name, "<br> <b> Price: </b>", listings.tas$price, "<br/><b> Room Type: </b>", listings.tas$room_type, "<br/><b> Property Type: </b>", listings.tas$property_type
+                 )) %>% 
+  setView(146.8,-41.5, zoom = 7)
+```
+
+Next, we will perform uni variate analysis over some key data sets
+
+**Popularity clusters (ggplot chorophlet of colored ratings)**
+
+graph showing coloured zones based on overall ratings
+
+**Ratings vs count of amenities per listing (per city zone)**
+
+**Popularity and closeness to CBD (Santiago Melbourne)**
 
 ```{r}
 ggplot(data = all.listings, mapping = aes(x = review_scores_rating)) +
