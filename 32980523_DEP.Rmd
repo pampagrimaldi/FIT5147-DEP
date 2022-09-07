@@ -77,19 +77,23 @@ some text
 
 ### 1.4 Environment Setup
 
-The following libraries will be used for this project:
+The following packages will be used for this project:
 
--   tidyverse
+| Package name | Category               | Comments |
+|--------------|------------------------|----------|
+| tidyverse    | General Data Analysis  |          |
+| dplyr        | General data analysis  |          |
+| broom        | Geo-spatial Analysis   |          |
+| ggmap        | Geo-spatial Analysis   |          |
+| mapproj      | Geo-spatial Analysis   |          |
+| geogjsonio   | Geo-spatial Analysis   |          |
+| ggmap        | Geo-spatial Analysis   |          |
+| ggplot2      | General visualisations |          |
+| janitor      | Data Cleaning          |          |
+| naniar       | Data Cleaning          |          |
+| UpSetR       | Data Cleaning          |          |
 
--   broom
-
--   ggmap
-
--   mapproj
-
--   ggplot2
-
--   geojsonio
+: Selected libraries
 
 ```{r libraries, include=FALSE}
 # for all things EDA
@@ -108,6 +112,7 @@ library(janitor) # data cleaning
 #install.packages("naniar")
 library(naniar)
 library(UpSetR)
+library(dplyr)
 ```
 
 ------------------------------------------------------------------------
@@ -123,25 +128,15 @@ The data set contains information from [Inside Airbnb](http://insideairbnb.com/g
 3.  Tasmania, Australia (the island of the island)
 4.  Santiago, Chile (hometown of the author of this report)
 
-Furthermore, each data set contains the following individual tables:
+We will also use *four sets* of quarterly produced data for each one of the regions, in order to explore time-wise variability of the listings.
 
--   **listings**: detailed listings with 74 key attributes for each listing. However, this study will mostly use are: `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.`
+A summary of all the information is provided in the table below:
 
-    -   **Total observations**: 132.572
-
--   **calendar**: booking price information for each listing
-
-    -   **Total observations**:
-
--   **reviews:** detailed reviews for each listing.
-
-    -   **Total observations**:
-
--   **GeoJSON files**:
-
--   Other... (TBC)
-
-In addition, the study will use the last four available quarterly information released for each location.
+| Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
+|----------|-----------------------------------------------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
+| Calendar |                                                           |                    |                                                                                                                                                     |
+| Reviews  |                                                           |                    |                                                                                                                                                     |
 
 ### 2.2 Data Loading
 
@@ -149,38 +144,11 @@ The following steps will go through loading the data that will be used throughou
 
 #### 2.2.1 Listings
 
-Although Airbnb provides a rich data set of 74 variables for listings, most of them won't be useful for the study. Therefore, I've kept only 18 variables instead. In order to do so, the complete data set for each city and time period was loaded into a data frame (132572 rows x 74 variables), but
+Although Airbnb provides a rich data set of 74 variables for listings, most of them won't be useful for the study. More details on the selected variables will be explained in section (TBC).
 
 ```{r}
 # combine data sets
-all.listings.short <- read_csv("data/Melbourne/2022_06/listings.csv", show_col_types = FALSE)
-```
-
-NOTE: check issue with neighborhood data:
-
-```{r}
-list.files(path = "data/Santiago", recursive = TRUE, pattern="listings.csv.gz$", full.names = TRUE)
-getwd()
-```
-
-```{r}
-# combine data sets Santiago only
-all.listings.scl <- list.files(path = "data/Santiago", recursive = TRUE, full.names = TRUE, pattern="listings.csv.gz$") %>%
-  map_df(~read_csv(.,show_col_types = FALSE))
-# combine data sets Melbourne only
-all.listings.mel <- list.files(path = "data/Melbourne", recursive = TRUE, full.names = TRUE, pattern="listings.csv.gz$") %>%
-  map_df(~read_csv(.,show_col_types = FALSE))
-# combine data sets Tasmania only
-all.listings.tas <- list.files(path = "data/Tasmania", recursive = TRUE, full.names = TRUE, pattern="listings.csv.gz$") %>%
-  map_df(~read_csv(.,show_col_types = FALSE))
-# combine data sets Northern Rivers only
-all.listings.nr <- list.files(path = "data/Northern Rivers", recursive = TRUE, full.names = TRUE, pattern="listings.csv.gz$") %>%
-  map_df(~read_csv(.,show_col_types = FALSE))
-```
-
-```{r}
-# combine data sets
-all.listings <- list.files(recursive = TRUE, pattern="listings.csv.gz$") %>%
+all.listings <- list.files(recursive = TRUE, pattern="^listings.csv.gz$") %>%
   map_df(~read_csv(.,show_col_types = FALSE))
 ```
 
@@ -190,7 +158,7 @@ Intro to review information
 
 ```{r}
 # combine data sets
-all.reviews <- list.files(recursive = TRUE, pattern="*reviews.csv.gz") %>%
+all.reviews <- list.files(recursive = TRUE, pattern="^reviews.csv.gz$") %>%
   map_df(~read_csv(.,show_col_types = FALSE))
 ```
 
@@ -202,82 +170,65 @@ Intro to calendar information
 
 ```{r}
 # combine data sets
-all.calendar <- list.files(recursive = TRUE, pattern="*calendar.csv.gz") %>%
+all.calendar <- list.files(recursive = TRUE, pattern="^calendar.csv.gz$") %>%
   map_df(~read_csv(.,show_col_types = FALSE))
 ```
 
 Some description about results
 
-### 2.2.4 Neighborhoods
-
-We will also need to load a list of neighborhoods per region as the project will be
+We will also need to load a list of neighborhoods per region as the project will base most of the analysis on comparing different cities.
 
 ```{r}
-nb.list <- read_csv("data/neighbourhoods.csv", show_col_types = FALSE)
-```
-
-#### 2.2.4 Geo spatial Data
-
-Loading the maps...
-
-```{r}
-# Plot it
-
-mel.map <- geojson_read('data/Melbourne/2022_06/neighbourhoods.geojson', what="sp")
-
-ggplot() +
-  geom_polygon(data = mel.map, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
-  theme_void() +
-  coord_map()
+nb.list <- read_csv("data/neighbourhoods.csv", show_col_types = FALSE) %>% rename(neighbourhood_group.new = neighbourhood_group)
 ```
 
 ### 2.3 Data Cleaning
 
-#### Data issues (missing data, messy data, etc.)
+#### 2.3.1 Data Cleaning: Duplicates
 
-#### Collection/Measurement
-
--   If data needs to be collected, what are the measurements being taken (clearly define the procedures and standardization)?
-
--   Are the measurements valid and reliable (is there potentially a need to add a research step here and conducting your own validity/reliability study before proceeding)?
-
-**NOTE: there's an issue with the combination of neighborhood data**
-
-#### Data Cleaning: Duplicates
-
--   What pre-processing steps were taken
-
-First, we will check for duplicates on each data frame. The summary below represents all the summaries in the Calendar, Listings and Reviews data set.
+First, we will check for duplicates on each data frame, by using `get_dupes` function from the `janitor` library:
 
 ```{r}
-#some code to build a summary of duplicates
+#check listing duplicates
+listings.dupes <- get_dupes(all.listings, id, last_scraped)
 ```
 
 ```{r}
-# check dupes for listings
-all.listings <- all.listings %>% distinct(.keep_all = TRUE)
+#check reviews duplicates
+review.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
 ```
 
 ```{r}
-# remove duplicates
+head(review.dupes)
+```
+
+```{r}
+#run later
+calendar.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
+```
+
+The review data frame contained 71.873 duplicates, which by inspection of the results header appear to be due some of the combined data sets containing ASCII characters while other comments didn't include them.
+
+```{r}
+#remove duplicated reviews
+# fix later
 all.reviews <- all.reviews %>% distinct(.keep_all = TRUE)
 ```
 
-```{r}
-# remove duplicate for calendar
-all.calendar <- all.calendar %>% distinct(.keep_all = TRUE)
-```
+#### 2.3.2 Data Cleaning: Missing Values
+
+We will use the fantastic tools from the `naniar` library to plot and summarise issues with missing values.
 
 ```{r}
 gg_miss_upset(all.listings)
-## add title
 ```
 
-#### Data Cleaning: Missing Values
-
 ```{r}
-gg_miss_upset(all.reviews)
-## add title
+#
+listings.NA <- all.listings %>% 
+  miss_var_summary() %>% 
+  filter(pct_miss >20)
+listings.NA
 ```
 
 Within the `all.listings` data frame we can see that `license`, `host_neighbourhood`, `neighbourhood_group_cleansed`, `bathrooms`, and `calendar_updated` have missing values. Furthermore, this visualization tells us that all these variables have 691.141 missing values together, while smaller groupings of these variables have between 30.000 and 35.000 missing variables together.
@@ -328,26 +279,19 @@ listings.NA.short <- all.listings.short %>%
 listings.NA.short
 ```
 
-```{r}
-#drop columns with higher than 20% missing values
-all.listings <- all.listings %>% select(-c(listings.NA$variable))
-```
-
 (**EDIT**)Eighteen variables in the `all.listings` data frame were found to contain more than 20% of their values missing and were consequently filtered out. On the other hand, all variables were kept for `all.calendar` and `all.reviews` data frames.
 
-We will also join the `nb.list` list of areas to the main listings data frame
+We will also join the `nb.list` list of regions to the main listings data frame, as this will be useful for slicing our data and building comparisons across regions:
 
 ```{r}
-# inner join
-nb.list <- read_csv("data/neighbourhoods.csv", show_col_types = FALSE)
-
-all.listings <- all.listings %>% left_join(nb.list, by="neighbourhood")
+all.listings <- all.listings %>% left_join(nb.list, by=c("neighbourhood_cleansed" = "neighbourhood"))
 ```
 
-Next we need to correct the data types across the dataset.
+Next, we will correct any data type in the `all.listings` data frame that may not be fit for analysis, and at this stage it's only the `price` variable:
 
 ```{r}
-typeof(all.listings)
+#using parse_number to fix price data type
+all.listings$price <- parse_number(all.listings$price)
 ```
 
 ##### Findings
@@ -370,12 +314,15 @@ typeof(all.listings)
 
 ### Listings
 
-Lets visualize the prices by city
+Lets visualize the listing ratings by city
 
 ```{r}
-ggplot(data = all.listings) +
-  geom_histogram(mapping = aes(x = price),)
+ggplot(data = all.listings, mapping = aes(x = review_scores_rating)) +
+         geom_histogram(aes(color=review_scores_rating)) +
+  facet_wrap(~neighbourhood_group.new)
 ```
+
+However, this is
 
 Hypothesis 1:
 
