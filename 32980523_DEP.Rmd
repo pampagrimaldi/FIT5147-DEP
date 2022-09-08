@@ -77,27 +77,17 @@ The following packages will be used for this project:
 
 : Selected libraries
 
-```{r libraries, include=FALSE}
-# for all things EDA
-library(tidyverse)
-# for geospatial data
-library(broom)
-#install.packages("geojsonio")
-library(ggmap)
-library(mapproj)
-library(geojsonio)
-library(ggmap)
-library(rgdal)
-library(leaflet)
-# for plotting
-library(ggplot2)
-# other libraries (potentially)
-library(janitor) # data cleaning
-#install.packages("naniar")
-library(naniar)
-library(UpSetR)
-library(dplyr)
-library(sf)
+```{r libraries, warning=FALSE, include=FALSE}
+
+packages = c('tidyverse', 'ggplot2', 'skimr', 'naniar', 'kableExtra','dplyr', 'ggstatsplot','plotly','haven','funModeling','crosstalk','data.table', 'ggmosaic','ggExtra','ggpubr','sf','tmap','sp', 'leaflet','widgetframe','broom','geojsonio','rgdal','tmap','tmaptools','janitor','dplyr','geojsonio')
+
+#loop to install packages
+for(p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
 ```
 
 ------------------------------------------------------------------------
@@ -118,7 +108,7 @@ We will also use *four sets* of quarterly produced data for each one of the regi
 A summary of all the information is provided in the table below:
 
 | Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
-|--------------|--------------|--------------|-------------------------------|
+|----------------|----------------|----------------|------------------------|
 | Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
 | Calendar |                                                           |                    |                                                                                                                                                     |
 | Reviews  |                                                           |                    |                                                                                                                                                     |
@@ -160,12 +150,6 @@ Intro to calendar information
 ```
 
 Some description about results
-
-We will also need to load a list of neighborhoods per region as the project will base most of the analysis on comparing different cities.
-
-```{r}
-nb.list <- read_csv("data/neighbourhoods.csv", show_col_types = FALSE) %>% rename(neighbourhood_group.new = neighbourhood_group)
-```
 
 ### 2.3 Data Cleaning
 
@@ -232,54 +216,105 @@ gg_miss_upset(all.calendar)
 
 The `all.calendar` data frame has a fairly low rate of missing values, with only 1.432 values for `minimum_nights` `maximum_nights` combined, and only 953 missing values for `price` and `adjusted_price` combined.
 
-Therefore the following actions were taken:
+#### 2.3.3 Data Cleaning: Preparation of new Variables
 
--   **listings**:
-
--   **reviews**:
-
--   **calendar**:
+-   Remove unnecessary variables
 
 ```{r}
-# summary of missing data in listings
-listings.NA <- all.listings %>% 
-  miss_var_summary() %>% 
-  filter(pct_miss >20)
-listings.NA
-listings.NA
-# summary of missing data in reviews
-all.reviews %>% miss_var_summary() %>% filter(pct_miss >20)
-# summary of missing data in calendar
-all.calendar %>% miss_var_summary() %>% filter(pct_miss >20)
+all.listings.clean <- all.listings %>%
+  select(-listing_url, -scrape_id, -neighborhood_overview, -picture_url, -host_id, -host_url, -host_name, -host_location,
+         -host_thumbnail_url, -host_picture_url, -first_review, -last_review, -calendar_last_scraped,
+         -has_availability, -host_has_profile_pic, -calendar_updated, -license, -bathrooms, -neighbourhood, -host_neighbourhood, -neighbourhood_group_cleansed)
 ```
+
+-   Rename names of lengthy features
 
 ```{r}
-colSums(is.na(all.listings))
+#rename some annoyingly long columns names
+all.listings.clean <- all.listings.clean %>% rename(nb_cleansed = neighbourhood_cleansed)
 ```
+
+-   Connect a list of neighborhood by city to the main listing data
 
 ```{r}
-listings.NA.short <- all.listings.short %>% 
-  miss_var_summary() %>% 
-  filter(pct_miss >20)
-listings.NA.short
+nb.list <- read_csv("data/neighbourhoods.csv", show_col_types = FALSE)
+
+all.listings.clean <- all.listings.clean %>% left_join(nb.list, by=c("nb_cleansed" = "neighbourhood_cleansed"))
 ```
 
-(**EDIT**)Eighteen variables in the `all.listings` data frame were found to contain more than 20% of their values missing and were consequently filtered out. On the other hand, all variables were kept for `all.calendar` and `all.reviews` data frames.
-
-We will also join the `nb.list` list of regions to the main listings data frame, as this will be useful for slicing our data and building comparisons across regions:
-
-```{r}
-all.listings <- all.listings %>% left_join(nb.list, by=c("neighbourhood_cleansed" = "neighbourhood"))
-```
-
-Next, we will correct any data type in the `all.listings` data frame that may not be fit for analysis, and at this stage it's only the `price` variable:
+-   Correct any data type in the `all.listings` data frame that may not be fit for analysis, and at this stage it's only the `price` variable:
 
 ```{r}
 #using parse_number to fix price data type
-all.listings$price <- parse_number(all.listings$price)
+all.listings.clean$price <- parse_number(all.listings.clean$price)
 ```
 
-##### Findings
+-   And remove listings with price equal to zero or negative values (6 listings)
+
+```{r}
+all.listings.clean %>% filter(price == 0)
+all.listings.clean %>% filter(price < 0)
+```
+
+```{r}
+all.listings.clean <- all.listings.clean %>% filter(price!=0)
+```
+
+-   Correct name capitalisation
+
+Also, some of the neighborhood names are incorrectly formatted:
+
+```{r}
+#fixing capitalised words
+#check later, as it may get in the way with joins
+all.listings.clean$nb_cleansed <- str_to_title(all.listings.clean$nb_cleansed)
+```
+
+-   Reformat scraped data
+
+```{r}
+# reformat scraping dates
+all.listings.clean$last_scraped.new <- format(all.listings.clean$last_scraped,'%b-%Y')
+```
+
+-   Replace host_verification and amenities with count of the variables
+
+```{r}
+# replace amenities textual variable with count of amenities
+all.listings.clean <- all.listings.clean %>%
+  mutate(amenities_count = sapply(str_split(amenities, ","), length)) %>%
+  select(-amenities)
+# replace amenities textual variable with count of amenities
+```
+
+-   Create binned variable for ratings
+
+```{r}
+# 1.6 Create binned variable for ratings
+all.listings.clean$rating.bin <- cut(all.listings.clean$review_scores_rating, c(0,1,2,3,4,5))
+```
+
+-   Improve property type variable
+
+```{r}
+# get actual property type (remove room type component) from property_type
+all.listings.clean <- all.listings.clean %>%
+  mutate(property_type = tolower(property_type)) %>%
+  mutate(property_type = case_when(
+    grepl(" in ", property_type, fixed = TRUE) == TRUE ~ gsub("^.*in ", "", property_type),
+    TRUE ~ gsub("entire ", "", property_type)
+  ))
+```
+
+-   Finally, factorize all character and logical variables for later processing.
+
+```{r}
+all.listings.final <- all.listings.clean %>%
+  mutate(across(where(is.character), as.factor)) %>%
+  mutate(across(where(is.logical), as.factor))
+```
+
+#### 2.3.4 Findings
 
 -   duplicate calendar items
 
@@ -295,34 +330,24 @@ all.listings$price <- parse_number(all.listings$price)
 
 ## **Step 3: Visualize & Summarize Data**
 
--   Once data has been collected and cleaned, provide an overview of the data using summarize statistics and visuals.
+Once data has been collected and cleaned, provide an overview of the data using summarize statistics and visuals.
 
-### Listings
+### 3.1 Univariate Analysis
+
+### 3.2 Bivariate Analysis
+
+### 3.3 Mapping
 
 Lets visualize the listing ratings by city. Firstly, we will visualize a clustered representation of the listings with leaflet to help set the lay of the land across all cities.
-
-**Lay of the Land**
-
-```{r}
-#delete
-all.listings  %>% 
-  filter(neighbourhood_group.new == "Tasmania") %>% distinct(last_scraped)
-```
-
-```{r}
-# 1.6 Create binned variable for ratings
-all.listings$rating.bin <- cut(all.listings$review_scores_rating, c(0,1,2,3,4,5))
-unique(all.listings$rating.bin)
-```
 
 #### Melbourne
 
 ```{r echo=FALSE}
 #Reading Listings Data
 #load data frame (filtered by city)
-listings.mel <- all.listings %>% 
+listings.mel <- all.listings.final %>% 
   filter(last_scraped == "2022-06-06") %>% 
-  filter(neighbourhood_group.new == "Melbourne")
+  filter(nb_group == "Melbourne")
 
 #Creating Listings across N
 leaflet(listings.mel) %>%
@@ -330,6 +355,34 @@ leaflet(listings.mel) %>%
   addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.mel$name , "<br/><b> Host Name: </b>", listings.mel$host_name, "<br> <b> Price: </b>", listings.mel$price, "<br/><b> Room Type: </b>", listings.mel$room_type, "<br/><b> Property Type: </b>", listings.mel$property_type
                  )) %>% 
   setView(144.94,-37.84, zoom = 12)
+```
+
+```{r message=FALSE, warning=FALSE}
+# load melbourne map
+mel.map <- st_read("data/Melbourne/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+
+# collapse dataframe and summarise price by neighbourhood
+listing_summary <- all.listings.final %>%
+  filter(last_scraped.new == "Jun-2022") %>% 
+  group_by(nb_group,nb_cleansed,last_scraped.new) %>%
+  summarise(count = n(),
+            avg_price = mean(price),
+            min_price = min(price),
+            max_price = max(price))
+
+#correct listing summary fields
+
+listing_summary$nb_cleansed <- as.character(listing_summary$nb_cleansed)
+listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
+
+# combine summary and map
+mel.map.data <- mel.map %>% inner_join(listing_summary)
+
+#plot map
+ggplot(mel.map.data) +
+  geom_sf(aes(fill=avg_price)) +
+  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
+  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
 ```
 
 Bar plot based on neighborhood
@@ -343,16 +396,16 @@ grouped.mel <- listings.mel %>%
 ggplot(grouped.mel, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
 ```
 
-One clear issue is that there's a disproportionate number of 4-5 star reviews in the data set, which w
+One clear issue is that there's a disproportionate number of 4-5 star reviews in the data set, which
 
 #### Santiago
 
 ```{r echo=FALSE}
 #Reading Listings Data
 #load data frame (filtered by city)
-listings.scl <- all.listings %>% 
+listings.scl <- all.listings.final %>% 
   filter(last_scraped == "2022-06-22") %>% 
-  filter(neighbourhood_group.new == "Santiago")
+  filter(nb_group == "Santiago")
 
 #Creating Listings across N
 leaflet(listings.scl) %>%
@@ -363,12 +416,40 @@ leaflet(listings.scl) %>%
 ```
 
 ```{r}
+# load melbourne map
+scl.map <- st_read("data/Santiago/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+
+# collapse dataframe and summarise price by neighbourhood
+listing_summary.scl <- all.listings.final %>%
+  filter(last_scraped.new == "Jun-2022", nb_group == "Santiago") %>% 
+  group_by(nb_group,nb_cleansed,last_scraped.new) %>%
+  summarise(count = n(),
+            avg_price = mean(price),
+            min_price = min(price),
+            max_price = max(price))
+
+#correct listing summary fields
+
+listing_summarys.scl$nb_cleansed <- as.character(listing_summary$nb_cleansed)
+listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
+
+# combine summary and map
+mel.map.data <- mel.map %>% inner_join(listing_summary)
+
+#plot map
+ggplot(mel.map.data) +
+  geom_sf(aes(fill=avg_price)) +
+  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
+  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
+```
+
+```{r}
 grouped.scl <- listings.scl %>%
-  group_by(neighbourhood_cleansed,rating.bin) %>%
+  group_by(nb_cleansed,rating.bin) %>%
   tally() %>%
   rename(total.listings = n)
 #plot it
-ggplot(grouped.scl, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
+ggplot(grouped.scl, aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
 ```
 
 #### Northern Rivers
@@ -390,11 +471,11 @@ leaflet(listings.nr) %>%
 
 ```{r}
 grouped.nr <- listings.nr %>%
-  group_by(neighbourhood_cleansed,rating.bin) %>%
+  group_by(nb_cleansed,rating.bin) %>%
   tally() %>%
   rename(total.listings = n)
 #plot it
-ggplot(grouped.nr, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
+ggplot(grouped.nr, aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
 ```
 
 #### Tasmania
@@ -428,27 +509,19 @@ Next, we will perform uni variate analysis over some key data sets
 **Popularity clusters (ggplot chorophlet of colored ratings)**
 
 ```{r}
-all.listings %>% group_by(neighbourhood_group.new) %>% summarise(mean(review_scores_rating))
+#turn off sci notation.
+options(scipen = 999)
+# loading map geojson file
+mel.map <- st_read("data/Melbourne/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+# create inner join of map and listings data
+map.plus.listings.mel <- mel.map %>% 
+  inner_join(grouped.mel, by = c("neighbourhood" = "neighbourhood_cleansed"))
+
 ```
 
 **Ratings vs count of amenities per listing (per city zone)**
 
-**Popularity and closeness to CBD (Santiago Melbourne)**
-
-```{r}
-# creating melbourne map
-mel.map <- geojson_read('data/Melbourne/2022_06/neighbourhoods.geojson', what="sp")
-ggplot() +
-  geom_polygon(data = mel.map, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
-  theme_void() +
-  coord_map()
-# adding metrics to the map
-
-
-# creating a chorophlet
-
-
-```
+**Popularity and closeness to CBD (Santiago Melbourne**
 
 ```{r}
 
@@ -475,9 +548,71 @@ ggplot(data = listings.nr) +
 ```
 
 ```{r}
-# ggplot(data = all.listings, mapping = aes(x = review_scores_rating)) +
-#          geom_histogram(aes(color=review_scores_rating)) +
-#   facet_wrap(~neighbourhood_group.new)
+# need to filter out data in 2 ways
+# only use latest quarter
+#filter out better columns for analysis.
+
+ggplot(data=all.listings,aes(x=log10(price), fill=neighbourhood_group.new))+
+   geom_histogram(position = "identity", alpha = 0.2, bins = 50)
+```
+
+Perhaps prices are a good indicator of indicator of preference?
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+options(scipen=999)
+
+# load melbourne map
+mel.map <- st_read("data/Melbourne/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+#load scl map
+scl.map <- st_read("data/Santiago/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+#load tassie map
+tas.map <- st_read("data/Tasmania/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+#load nr map
+nr.map <- st_read("data/Northern Rivers/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+
+# collapse dataframe and summarise price by neighbourhood
+listing_summary <- all.listings.final %>%
+  filter(last_scraped.new == "Jun-2022") %>% 
+  group_by(nb_group,nb_cleansed,last_scraped.new) %>%
+  summarise(count = n(),
+            avg_price = mean(price),
+            min_price = min(price),
+            max_price = max(price))
+
+#correct listing summary fields
+
+listing_summary$nb_cleansed <- as.character(listing_summary$nb_cleansed)
+listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
+
+# combine summary and map
+mel.map.data <- mel.map %>% inner_join(listing_summary)
+scl.map.data <- scl.map %>% inner_join(listing_summary)
+tas.map.data <- tas.map %>% inner_join(listing_summary)
+nr.map.data <- nr.map %>% inner_join(listing_summary)
+```
+
+```{r}
+
+#plot maps
+ggplot(mel.map.data) +
+  geom_sf(aes(fill=avg_price)) +
+  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
+  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
+#
+ggplot(scl.map.data) +
+  geom_sf(aes(fill=avg_price)) +
+  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
+  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
+
+ggplot(tas.map.data) +
+  geom_sf(aes(fill=avg_price)) +
+  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
+  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
+
+ggplot(nr.map.data) +
+  geom_sf(aes(fill=avg_price)) +
+  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
+  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
 ```
 
 However, this is
