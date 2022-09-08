@@ -118,7 +118,7 @@ We will also use *four sets* of quarterly produced data for each one of the regi
 A summary of all the information is provided in the table below:
 
 | Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
-|------------|------------|------------|-------------------------------------|
+|--------------|--------------|--------------|-------------------------------|
 | Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
 | Calendar |                                                           |                    |                                                                                                                                                     |
 | Reviews  |                                                           |                    |                                                                                                                                                     |
@@ -155,8 +155,8 @@ Intro to calendar information
 
 ```{r}
 # combine data sets
-all.calendar <- list.files(recursive = TRUE, pattern="^calendar.csv.gz$") %>%
-  map_df(~read_csv(.,show_col_types = FALSE))
+# all.calendar <- list.files(recursive = TRUE, pattern="^calendar.csv.gz$") %>%
+#   map_df(~read_csv(.,show_col_types = FALSE))
 ```
 
 Some description about results
@@ -189,7 +189,7 @@ head(review.dupes)
 
 ```{r}
 #run later
-calendar.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
+# calendar.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
 ```
 
 The review data frame contained 71.873 duplicates, which by inspection of the results header appear to be due some of the combined data sets containing ASCII characters while other comments didn't include them.
@@ -309,6 +309,12 @@ all.listings  %>%
   filter(neighbourhood_group.new == "Tasmania") %>% distinct(last_scraped)
 ```
 
+```{r}
+# 1.6 Create binned variable for ratings
+all.listings$rating.bin <- cut(all.listings$review_scores_rating, c(0,1,2,3,4,5))
+unique(all.listings$rating.bin)
+```
+
 #### Melbourne
 
 ```{r echo=FALSE}
@@ -326,12 +332,25 @@ leaflet(listings.mel) %>%
   setView(144.94,-37.84, zoom = 12)
 ```
 
+Bar plot based on neighborhood
+
+```{r}
+grouped.mel <- listings.mel %>%
+  group_by(neighbourhood_cleansed,rating.bin) %>%
+  tally() %>%
+  rename(total.listings = n)
+#plot it
+ggplot(grouped.mel, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
+```
+
+One clear issue is that there's a disproportionate number of 4-5 star reviews in the data set, which w
+
 #### Santiago
 
 ```{r echo=FALSE}
 #Reading Listings Data
 #load data frame (filtered by city)
-listings.tas <- all.listings %>% 
+listings.scl <- all.listings %>% 
   filter(last_scraped == "2022-06-22") %>% 
   filter(neighbourhood_group.new == "Santiago")
 
@@ -341,6 +360,15 @@ leaflet(listings.scl) %>%
   addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.scl$name , "<br/><b> Host Name: </b>", listings.scl$host_name, "<br> <b> Price: </b>", listings.scl$price, "<br/><b> Room Type: </b>", listings.scl$room_type, "<br/><b> Property Type: </b>", listings.scl$property_type
                  )) %>% 
   setView(-70.645348,-33.459229, zoom = 12)
+```
+
+```{r}
+grouped.scl <- listings.scl %>%
+  group_by(neighbourhood_cleansed,rating.bin) %>%
+  tally() %>%
+  rename(total.listings = n)
+#plot it
+ggplot(grouped.scl, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
 ```
 
 #### Northern Rivers
@@ -360,6 +388,15 @@ leaflet(listings.nr) %>%
   setView(153.6,-28.6, zoom = 8)
 ```
 
+```{r}
+grouped.nr <- listings.nr %>%
+  group_by(neighbourhood_cleansed,rating.bin) %>%
+  tally() %>%
+  rename(total.listings = n)
+#plot it
+ggplot(grouped.nr, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
+```
+
 #### Tasmania
 
 ```{r echo=FALSE}
@@ -377,20 +414,70 @@ leaflet(listings.tas) %>%
   setView(146.8,-41.5, zoom = 7)
 ```
 
+```{r}
+grouped.tas <- listings.tas %>%
+  group_by(neighbourhood_cleansed,rating.bin) %>%
+  tally() %>%
+  rename(total.listings = n)
+#plot it
+ggplot(grouped.tas, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
+```
+
 Next, we will perform uni variate analysis over some key data sets
 
 **Popularity clusters (ggplot chorophlet of colored ratings)**
 
-graph showing coloured zones based on overall ratings
+```{r}
+all.listings %>% group_by(neighbourhood_group.new) %>% summarise(mean(review_scores_rating))
+```
 
 **Ratings vs count of amenities per listing (per city zone)**
 
 **Popularity and closeness to CBD (Santiago Melbourne)**
 
 ```{r}
-ggplot(data = all.listings, mapping = aes(x = review_scores_rating)) +
-         geom_histogram(aes(color=review_scores_rating)) +
-  facet_wrap(~neighbourhood_group.new)
+# creating melbourne map
+mel.map <- geojson_read('data/Melbourne/2022_06/neighbourhoods.geojson', what="sp")
+ggplot() +
+  geom_polygon(data = mel.map, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
+  theme_void() +
+  coord_map()
+# adding metrics to the map
+
+
+# creating a chorophlet
+
+
+```
+
+```{r}
+
+mel.map <- geojson_read('data/Melbourne/2022_06/neighbourhoods.geojson', what="sp")
+ggplot() +
+  geom_polygon(data = mel.map, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
+  theme_void() +
+  coord_map()
+```
+
+```{r}
+ggplot(data = listings.scl) +
+  geom_hex(mapping = aes(x = longitude, y = latitude))
+```
+
+```{r}
+ggplot(data = listings.tas) +
+  geom_hex(mapping = aes(x = longitude, y = latitude))
+```
+
+```{r}
+ggplot(data = listings.nr) +
+  geom_hex(mapping = aes(x = longitude, y = latitude))
+```
+
+```{r}
+# ggplot(data = all.listings, mapping = aes(x = review_scores_rating)) +
+#          geom_histogram(aes(color=review_scores_rating)) +
+#   facet_wrap(~neighbourhood_group.new)
 ```
 
 However, this is
@@ -406,16 +493,6 @@ Popular listings also rely on the type of amenities provided in the accommodatio
 ### Reviews
 
 -   Offer interpretation of visuals that may help guide the model building process or generate discussion about any underlying trends in the data specific to the research question.
-
-## **Step 4: Model Development/Interpretation**
-
--   Iteratively build models (simple to complex).
-
--   Interpret the results of each model to explain why a more complex model or different modelling strategy may be required.
-
-## **Step 5: Model Evaluation**
-
--   Evaluation the final model(s), describing model errors, model accuracy, residuals, assumptions, etc.
 
 ## **Step 6: Communication of Results**
 
