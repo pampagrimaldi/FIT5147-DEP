@@ -1,8 +1,10 @@
 ---
-title: "FIT5147 DEP S2 2022 - 32980523"
+title: "Study of Airbnb User Preferences in Chile and Australia"
+author: "Juan Pablo Grimaldi"
+date: "09/09/2022"
 output:
-  html_notebook:
-    toc: yes
+  pdf_document: default
+  html_document: default
 ---
 
 # FIT5147 \| Data Exploration Project
@@ -79,7 +81,7 @@ The following packages will be used for this project:
 
 ```{r libraries, warning=FALSE, include=FALSE}
 
-packages = c('tidyverse', 'ggplot2', 'skimr', 'naniar', 'kableExtra','dplyr', 'ggstatsplot','plotly','haven','funModeling','crosstalk','data.table', 'ggmosaic','ggExtra','ggpubr','sf','tmap','sp', 'leaflet','widgetframe','broom','geojsonio','rgdal','tmap','tmaptools','janitor','dplyr','geojsonio','ggside')
+packages = c('tidyverse', 'ggplot2', 'skimr', 'naniar', 'kableExtra','dplyr', 'ggstatsplot','plotly','haven','funModeling','crosstalk','data.table', 'ggmosaic','ggExtra','ggpubr','sf','tmap','sp', 'leaflet','widgetframe','broom','geojsonio','rgdal','tmap','tmaptools','janitor','dplyr','geojsonio','ggside',"RColorBrewer","wesanderson","ggthemes")
 
 #loop to install packages
 for(p in packages){
@@ -109,7 +111,7 @@ We will also use *four sets* of quarterly produced data for each one of the regi
 A summary of all the information is provided in the table below:
 
 | Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
-|------------|------------|------------|-------------------------------------|
+|--------------|--------------|--------------|-------------------------------|
 | Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
 | Calendar |                                                           |                    |                                                                                                                                                     |
 | Reviews  |                                                           |                    |                                                                                                                                                     |
@@ -161,9 +163,6 @@ Some description about results
 ```{r}
 #check listing duplicates
 listings.dupes <- get_dupes(all.listings, id, last_scraped)
-```
-
-```{r}
 #check reviews duplicates
 review.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
 ```
@@ -293,12 +292,25 @@ all.listings.clean <- all.listings.clean %>%
   ))
 ```
 
--   Finally, factorize all character and logical variables for later processing.
+-   Factorize all character and logical variables for later processing.
 
 ```{r}
 all.listings.final <- all.listings.clean %>%
   mutate(across(where(is.character), as.factor)) %>%
   mutate(across(where(is.logical), as.factor))
+```
+
+-   Combine listing data into the reviews dataset
+
+```{r}
+all.reviews.enriched <- all.reviews %>%
+  left_join(all.listings.clean, by=c("listing_id" = "id")) %>%
+  filter(last_scraped.new == "Jun-2022")
+
+```
+
+```{r}
+head(all.reviews.enriched %>% filter(listing_id =="9835"))
 ```
 
 #### 2.3.4 Findings
@@ -315,6 +327,8 @@ all.listings.final <- all.listings.clean %>%
 
 -   If any data was removed prior to analysis explain why.
 
+------------------------------------------------------------------------
+
 ## **Step 3: Visualize & Summarize Data**
 
 Once data has been collected and cleaned, provide an overview of the data using summarize statistics and visuals.
@@ -328,68 +342,75 @@ Once data has been collected and cleaned, provide an overview of the data using 
 
 hist1 <- ggplot(data=all.listings.final
                 ,aes(x=log10(price), fill=nb_group))+
-   geom_histogram(position = "identity", alpha = 0.2, bins = 50)
-hist1
+   geom_histogram(position = "identity", alpha = 0.3, bins = 50)
+hist1 + theme_clean() +scale_fill_brewer(palette = "Dark2") 
+```
+
+```{r}
+hist1 <- ggplot(data=all.listings.final
+                ,aes(x=, fill=nb_group))+
+   geom_histogram(position = "identity", alpha = 0.3, bins = 50)
+hist1 + theme_clean() +scale_fill_brewer(palette = "Dark2")
+```
+
+```{r}
+# prepare data
+barplot.listings <- all.listings.final %>% 
+         group_by(nb_group,nb_cleansed,rating.bin) %>%
+         filter(rating.bin!= "NA") %>% 
+         tally() %>%
+         rename(total.listings = n)
 ```
 
 ```{r}
 #melbourne
-ggplot(data = all.listings.final %>% 
-         group_by(nb_group,nb_cleansed,rating.bin) %>%
-         filter(nb_group =="Melbourne") %>% 
-         filter(rating.bin!= "NA") %>% 
-         tally() %>% 
-         rename(total.listings = n),
+ggplot(data = barplot.listings %>% filter(nb_group =="Melbourne"),
        aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + 
   coord_flip() +
-  labs(x="Neighbourhood", y="Count of Listings")
-#santiago
-ggplot(data = all.listings.final %>% 
-         group_by(nb_group,nb_cleansed,rating.bin) %>%
-         filter(nb_group =="Santiago") %>% 
-         filter(rating.bin!= "NA") %>% 
-         tally() %>% 
-         rename(total.listings = n),
-       aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity")+
-  coord_flip() +
-  labs(x="Neighbourhood", y="Count of Listings")
-  
-#northern rivers
-ggplot(data = all.listings.final %>% 
-         group_by(nb_group,nb_cleansed,rating.bin) %>%
-         filter(nb_group =="Northern Rivers") %>%
-         filter(rating.bin!= "NA") %>% 
-         tally() %>% 
-         rename(total.listings = n),
+  labs(x="Neighbourhood", y="Count of Listings") + 
+  theme_clean() +
+  scale_fill_manual("rating.bin", values=c("#357b8a", "#7db5b8", "#59c6f3", "#f6c458","#e06f69"))
+#Santiago
+ggplot(data = barplot.listings %>% filter(nb_group =="Santiago"),
        aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + 
   coord_flip() +
-  labs(x="Neighbourhood", y="Count of Listings")
-#tassie
-ggplot(data = all.listings.final %>% 
-         group_by(nb_group,nb_cleansed,rating.bin) %>%
-         filter(nb_group =="Tasmania") %>%
-         filter(rating.bin!= "NA") %>% 
-         tally() %>% 
-         rename(total.listings = n),
-       aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + 
-  coord_flip() +
-  labs(x="Neighbourhood", y="Count of Listings")
+  labs(x="Neighbourhood", y="Count of Listings") + 
+  theme_clean() +
+  scale_fill_manual("rating.bin", values=c("#357b8a", "#7db5b8", "#59c6f3", "#f6c458","#e06f69"))
 ```
 
 ```{r}
-ggplot(userData, aes(month, count, fill = count)) +
-    geom_bar(stat = "identity") +
-    scale_x_date() + 
-    scale_fill_continuous(low="blue", high="red") +
-    labs(x= "Time", y="Count")
-ggplot(data = all.listings.final %>% 
-         group_by(nb_group,nb_cleansed,rating.bin) %>%
-         filter(nb_group =="Melbourne") %>% 
-         filter(rating.bin!= "NA") %>% 
-         tally() %>% 
-         rename(total.listings = n),
+
+
+```
+
+```{r}
+# Northern Rivers
+ggplot(data = barplot.listings %>% filter(nb_group =="Northern Rivers"),
        aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + 
-  coord_flip()
+  coord_flip() +
+  labs(x="Neighbourhood", y="Count of Listings") + 
+  theme_clean() +
+  scale_fill_manual("rating.bin", values=c("#357b8a", "#7db5b8", "#59c6f3", "#f6c458","#e06f69"))
+```
+
+These plots point out that using average ratings as indication of preference won't be very useful to segment preferences, as the large majority of Airbnb score their stays at 4-5 stars. Therefore, in the following visualizations we will focus on number of reviews instead.
+
+Analysis of Reviews
+
+```{r}
+# first we will need to combine the 
+
+reviewsNum <- all.reviews %>% group_by(date = all.reviews$date) %>% summarise(number = n())
+
+ggplot(reviewsNum, aes(date, number)) +
+           geom_point(na.rm=TRUE, color = "#007A87", alpha=0.5) +geom_smooth(color = "#FF5A5F")+
+  ggtitle("Evolution of L",
+          subtitle = "Number of Reviews across years") +
+  labs(x = "Year", y = "Unique listings recieving reviews") +
+  theme(plot.title = element_text(face = "bold")) +
+  theme(plot.subtitle = element_text(face = "bold", color = "grey35")) +
+  theme(plot.caption = element_text(color = "grey68"))
 ```
 
 ### 3.2 Bivariate Analysis
