@@ -111,7 +111,7 @@ We will also use *four sets* of quarterly produced data for each one of the regi
 A summary of all the information is provided in the table below:
 
 | Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
-|---------------|---------------|---------------|---------------------------|
+|----------------|----------------|----------------|-------------------------|
 | Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
 | Calendar |                                                           |                    |                                                                                                                                                     |
 | Reviews  |                                                           |                    |                                                                                                                                                     |
@@ -160,7 +160,7 @@ Some description about results
 
 -   First, we will check for duplicates on each data frame, by using `get_dupes` function from the `janitor` library:
 
-```{r}
+```{r include=FALSE}
 #check listing duplicates
 listings.dupes <- get_dupes(all.listings, id, last_scraped)
 #check reviews duplicates
@@ -169,11 +169,6 @@ review.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
 
 ```{r}
 head(review.dupes)
-```
-
-```{r}
-#run later
-# calendar.dupes <- get_dupes(all.reviews,-c(comments,reviewer_name))
 ```
 
 -   removed the duplicates reviews
@@ -306,7 +301,6 @@ all.listings.final <- all.listings.clean %>%
 all.reviews.enriched <- all.reviews %>%
   left_join(all.listings.clean, by=c("listing_id" = "id")) %>%
   filter(last_scraped.new == "Jun-2022")
-
 ```
 
 #### 2.3.4 Findings
@@ -331,15 +325,15 @@ Once data has been collected and cleaned, provide an overview of the data using 
 
 ### 3.1 Univariate Analysis
 
-```{r}
+```{r echo=FALSE}
 # need to filter out data in 2 ways
 # only use latest quarter
 #filter out better columns for analysis.
-
 hist1 <- ggplot(data=all.listings.final
                 ,aes(x=log10(price), fill=nb_group))+
-   geom_histogram(position = "identity", alpha = 0.2, bins = 50) +
-hist1 + theme_clean() +scale_fill_brewer(palette = "Dark2")
+   geom_histogram(position = "identity", alpha = 0.2, bins = 50)
+
+  hist1 + theme_clean() +scale_fill_brewer(palette = "Dark2")
 ```
 
 ```{r include=FALSE}
@@ -351,7 +345,7 @@ barplot.listings <- all.listings.final %>%
          rename(total.listings = n)
 ```
 
-```{r}
+```{r echo=FALSE}
 #melbourne
 ggplot(data = barplot.listings %>% filter(nb_group =="Melbourne"),
        aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + 
@@ -368,7 +362,7 @@ ggplot(data = barplot.listings %>% filter(nb_group =="Santiago"),
   scale_fill_manual("rating.bin", values=c("#357b8a", "#7db5b8", "#59c6f3", "#f6c458","#e06f69"))
 ```
 
-```{r}
+```{r echo=FALSE, paged.print=TRUE}
 # Northern Rivers
 ggplot(data = barplot.listings %>% filter(nb_group =="Northern Rivers"),
        aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + 
@@ -390,13 +384,11 @@ These plots point out that using average ratings as indication of preference won
 
 Analysis of Reviews
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # prepare data
-
 reviewsNum <- all.reviews.enriched %>% group_by(date = all.reviews.enriched$date,
                                                 nb_group) %>% summarise(number = n())
 # plot popularity
-
 ggplot(reviewsNum, aes(date, number)) +
            geom_point(na.rm=TRUE, color = "#002B5B", alpha=0.4) +geom_smooth(color = "#FF5A5F")+
   ggtitle("Evolution of Listing's Popularity",
@@ -406,33 +398,11 @@ ggplot(reviewsNum, aes(date, number)) +
   theme(plot.subtitle = element_text(face = "bold", color = "grey35")) +
   theme(plot.caption = element_text(color = "grey68")) +
   scale_colour_brewer(type = "seq", palette = "Spectral") +
-  facet_wrap(~nb_group, shrink=FALSE)
+  facet_wrap(~nb_group, shrink=FALSE) +
+  theme_clean()
 ```
 
-```{r}
-# melbourne data
-# prepare data
-
-reviewsNum.mel <- all.reviews.enriched %>% 
-                  filter(nb_group =="Melbourne") %>% 
-                  filter(nb_cleansed ==c("Melbourne","Yarra Ranges","Port Phillip","Yarra","Stonnington")) %>% 
-                  group_by(date,nb_cleansed) %>%
-                  summarise(number = n())
-# plot popularity
-
-ggplot(reviewsNum.mel, aes(date, number)) +
-           geom_point(na.rm=TRUE, color ="#002B5B" alpha=0.5) +geom_smooth(color = "#FF5A5F")+
-  ggtitle("Evolution of Listing's Popularity",
-          subtitle = "Number of Reviews") +
-  labs(x = "Year", y = "listings with reviews") +
-  theme(plot.title = element_text(face = "bold")) +
-  theme(plot.subtitle = element_text(face = "bold", color = "grey35")) +
-  theme(plot.caption = element_text(color = "grey68")) +
-  scale_colour_brewer(type = "seq", palette = "Spectral") +
-  facet_wrap(~nb_cleansed)
-```
-
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 top5.cities <- c("Melbourne","Yarra Ranges","Port Phillip","Yarra","Stonnington","Hobart","Break O'day","Launceston","Glamorgan/Spring Bay","Tasman","Santiago","Providencia","Las Condes","Lo Barnechea","Ñuñoa","Byron Shire Council","Tweed Shire Council","Ballina Shire Council","Clarence Valley Council","Lismore City Council")
 
@@ -444,14 +414,14 @@ reviewsNum.top5 <- all.reviews.enriched %>%
 # plot popularity
 
 ggplot(reviewsNum.top5, aes(date, number)) +
-           geom_point(na.rm=TRUE, alpha=0.5,mapping=aes(color=nb_group)) +geom_smooth(color = "white")+
+           geom_point(na.rm=TRUE, alpha=0.5,color = "#002B5B") +geom_smooth(color="#FF5A5F")+
   ggtitle("Evolution of Listing's Popularity",
           subtitle = "Number of Reviews") +
   labs(x = "Year", y = "listings with reviews") +
   theme(plot.title = element_text(face = "bold")) +
   theme(plot.subtitle = element_text(face = "bold", color = "grey35")) +
   theme(plot.caption = element_text(color = "grey68")) +
-  scale_colour_brewer(type = "seq", palette = "Dark2") +
+  theme_clean() +
   facet_wrap(~city.nb)
 ```
 
@@ -459,7 +429,7 @@ ggplot(reviewsNum.top5, aes(date, number)) +
 
 We will continue working with the `all.reviews.enriched` and `all.listings.final` data sets.
 
-```{r}
+```{r echo=FALSE}
 scat1 <- ggplot(all.listings.final %>%
           filter(last_scraped.new=="Jun-2022") %>%
           filter(review_scores_rating>4) %>% 
@@ -498,7 +468,7 @@ Lets visualize the listing ratings by city. Firstly, we will visualize a cluster
 #Reading Listings Data
 #load data frame (filtered by city)
 listings.mel <- all.listings.final %>% 
-  filter(last_scraped == "2022-06-06") %>% 
+  filter(last_scraped.new == "Jun-2022") %>% 
   filter(nb_group == "Melbourne")
 
 #Creating Listings across N
@@ -509,21 +479,21 @@ leaflet(listings.mel) %>%
   setView(144.94,-37.84, zoom = 12)
 ```
 
-```{r message=FALSE, warning=FALSE}
-
-# collapse dataframe and summarise price by neighbourhood
-reviews_summary <- all.listings.final %>% 
+```{r include=FALSE}
+# code for maps
+listing_summary <- all.listings.final %>% 
   group_by(nb_group,nb_cleansed,last_scraped.new) %>%
   summarise(count = n(),
             avg_price = mean(price),
             min_price = min(price),
-            max_price = max(price))
+            max_price = max(price), .groups = "drop")
 
 #correct listing summary fields
-
 listing_summary$nb_cleansed <- as.character(listing_summary$nb_cleansed)
 listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
+```
 
+```{r echo=FALSE}
 # combine summary and map
 mel.map.data <- mel.map %>% inner_join(listing_summary)
 
@@ -534,26 +504,13 @@ ggplot(mel.map.data) +
   geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
 ```
 
-Bar plot based on neighborhood
-
-```{r}
-grouped.mel <- listings.mel %>%
-  group_by(neighbourhood_cleansed,rating.bin) %>%
-  tally() %>%
-  rename(total.listings = n)
-#plot it
-ggplot(grouped.mel, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
-```
-
-One clear issue is that there's a disproportionate number of 4-5 star reviews in the data set, which
-
 #### Santiago
 
 ```{r echo=FALSE}
 #Reading Listings Data
 #load data frame (filtered by city)
 listings.scl <- all.listings.final %>% 
-  filter(last_scraped == "2022-06-22") %>% 
+  filter(last_scraped.new == "Jun-2022") %>% 
   filter(nb_group == "Santiago")
 
 #Creating Listings across N
@@ -565,40 +522,14 @@ leaflet(listings.scl) %>%
 ```
 
 ```{r}
-# load melbourne map
-scl.map <- st_read("data/Santiago/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
-
-# collapse dataframe and summarise price by neighbourhood
-listing_summary.scl <- all.listings.final %>%
-  filter(last_scraped.new == "Jun-2022", nb_group == "Santiago") %>% 
-  group_by(nb_group,nb_cleansed,last_scraped.new) %>%
-  summarise(count = n(),
-            avg_price = mean(price),
-            min_price = min(price),
-            max_price = max(price))
-
-#correct listing summary fields
-
-listing_summarys.scl$nb_cleansed <- as.character(listing_summary$nb_cleansed)
-listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
-
 # combine summary and map
-mel.map.data <- mel.map %>% inner_join(listing_summary)
+scl.map.data <- scl.map %>% inner_join(listing_summary)
 
 #plot map
-ggplot(mel.map.data) +
+ggplot(scl.map.data) +
   geom_sf(aes(fill=avg_price)) +
   scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
   geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
-```
-
-```{r}
-grouped.scl <- listings.scl %>%
-  group_by(nb_cleansed,rating.bin) %>%
-  tally() %>%
-  rename(total.listings = n)
-#plot it
-ggplot(grouped.scl, aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
 ```
 
 #### Northern Rivers
@@ -606,9 +537,9 @@ ggplot(grouped.scl, aes(x = reorder(nb_cleansed, total.listings), y = total.list
 ```{r echo=FALSE}
 #Reading Listings Data
 #load data frame (filtered by city)
-listings.nr <- all.listings %>% 
-  filter(last_scraped == "2022-06-11") %>% 
-  filter(neighbourhood_group.new == "Northern Rivers")
+listings.nr <- all.listings.final %>% 
+  filter(last_scraped.new == "Jun-2022") %>% 
+  filter(nb_group == "Northern Rivers")
 
 #Creating Listings across N
 leaflet(listings.nr) %>%
@@ -618,23 +549,14 @@ leaflet(listings.nr) %>%
   setView(153.6,-28.6, zoom = 8)
 ```
 
-```{r}
-grouped.nr <- listings.nr %>%
-  group_by(nb_cleansed,rating.bin) %>%
-  tally() %>%
-  rename(total.listings = n)
-#plot it
-ggplot(grouped.nr, aes(x = reorder(nb_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
-```
-
 #### Tasmania
 
 ```{r echo=FALSE}
 #Reading Listings Data
 #load data frame (filtered by city)
-listings.tas <- all.listings %>% 
-  filter(last_scraped == "2022-06-05") %>% 
-  filter(neighbourhood_group.new == "Tasmania")
+listings.tas <- all.listings.final %>% 
+  filter(last_scraped.new == "Jun-2022") %>% 
+  filter(nb_group == "Tasmania")
 
 #Creating Listings across N
 leaflet(listings.tas) %>%
@@ -642,15 +564,6 @@ leaflet(listings.tas) %>%
   addMarkers(~longitude, ~latitude,labelOptions = labelOptions(noHide = F),clusterOptions = markerClusterOptions(),popup = paste0("<b> Listing name: </b>", listings.tas$name , "<br/><b> Host Name: </b>", listings.tas$host_name, "<br> <b> Price: </b>", listings.tas$price, "<br/><b> Room Type: </b>", listings.tas$room_type, "<br/><b> Property Type: </b>", listings.tas$property_type
                  )) %>% 
   setView(146.8,-41.5, zoom = 7)
-```
-
-```{r}
-grouped.tas <- listings.tas %>%
-  group_by(neighbourhood_cleansed,rating.bin) %>%
-  tally() %>%
-  rename(total.listings = n)
-#plot it
-ggplot(grouped.tas, aes(x = reorder(neighbourhood_cleansed, total.listings), y = total.listings)) + geom_bar(mapping = aes(fill= rating.bin),stat="identity") + coord_flip()
 ```
 
 Next, we will perform uni variate analysis over some key data sets
