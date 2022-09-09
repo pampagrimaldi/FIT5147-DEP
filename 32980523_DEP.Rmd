@@ -2,9 +2,7 @@
 title: "Study of Airbnb User Preferences in Chile and Australia"
 author: "Juan Pablo Grimaldi"
 date: "09/09/2022"
-output:
-  pdf_document: default
-  html_document: default
+output: pdf_document
 ---
 
 # FIT5147 \| Data Exploration Project
@@ -81,7 +79,7 @@ The following packages will be used for this project:
 
 ```{r libraries, warning=FALSE, include=FALSE}
 
-packages = c('tidyverse', 'ggplot2', 'skimr', 'naniar', 'kableExtra','dplyr', 'ggstatsplot','plotly','haven','funModeling','crosstalk','data.table', 'ggmosaic','ggExtra','ggpubr','sf','tmap','sp', 'leaflet','widgetframe','broom','geojsonio','rgdal','tmap','tmaptools','janitor','dplyr','geojsonio','ggside',"RColorBrewer","wesanderson","ggthemes")
+packages = c('tidyverse', 'ggplot2', 'skimr', 'naniar', 'kableExtra','dplyr', 'ggstatsplot','plotly','haven','funModeling','crosstalk','data.table', 'ggmosaic','ggExtra','ggpubr','sf','tmap','sp', 'leaflet','widgetframe','broom','geojsonio','rgdal','tmap','tmaptools','janitor','dplyr','geojsonio','ggside',"RColorBrewer","wesanderson","ggthemes","hrbrthemes","viridis")
 
 #loop to install packages
 for(p in packages){
@@ -90,7 +88,6 @@ for(p in packages){
   }
   library(p, character.only = T)
 }
-
 ```
 
 ------------------------------------------------------------------------
@@ -110,11 +107,20 @@ We will also use *four sets* of quarterly produced data for each one of the regi
 
 A summary of all the information is provided in the table below:
 
-| Dataset  | Description                                               | Total Observations | Most Relevant Fields                                                                                                                                |
-|----------------|----------------|----------------|-------------------------|
-| Listings | Detailed listings with 74 key attributes for each listing |                    | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
-| Calendar |                                                           |                    |                                                                                                                                                     |
-| Reviews  |                                                           |                    |                                                                                                                                                     |
++----------+--------------------------------------------------------------------+-----------------------------------------------------------+-------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Data set | Description                                                        | Total Observations                                        | Total data sets combined                  | Most Relevant Fields                                                                                                                                |
++==========+====================================================================+===========================================================+===========================================+=====================================================================================================================================================+
+| Listings | Detailed listings with 74 key attributes for each listing          | -   Pre-processed dimensions: 150.123 rows x 74 variables | 16 tables (4 regions and 4 quarters each) | `neighbourhood`, `latitude`, `longitude`, `room_type`, `price`, `minimum_nights`, `number_of_reviews`, `reviews_per_month`, and `availability_365.` |
+|          |                                                                    | -   Post-processed dimensions:                            |                                           |                                                                                                                                                     |
++----------+--------------------------------------------------------------------+-----------------------------------------------------------+-------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Reviews  | Detailed reviews for                                               | -   Pre-processed dimensions:                             | 16 tables (4 regions and 4 quarters each) |                                                                                                                                                     |
+|          |                                                                    |                                                           |                                           |                                                                                                                                                     |
+|          |                                                                    |     4.835.984 x 6 variables                               |                                           |                                                                                                                                                     |
+|          |                                                                    |                                                           |                                           |                                                                                                                                                     |
+|          |                                                                    | -   Post-processed dimensions: 1.512.030 x variables      |                                           |                                                                                                                                                     |
++----------+--------------------------------------------------------------------+-----------------------------------------------------------+-------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Maps     | Geojson shape files containing neighborhood areas for each region. |                                                           | N/A                                       | `neigbbourhood` , `geometry`                                                                                                                        |
++----------+--------------------------------------------------------------------+-----------------------------------------------------------+-------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ### 2.2 Data Loading
 
@@ -176,7 +182,7 @@ head(review.dupes)
 ```{r}
 #remove duplicated reviews
 # fix later
-all.reviews <- all.reviews %>% distinct_at(vars(-comments,-reviewer_name))
+all.reviews.clean <- all.reviews %>% distinct()
 ```
 
 #### 2.3.2 Data Cleaning: Missing Values
@@ -435,9 +441,9 @@ scat1 <- ggplot(all.listings.final %>%
           filter(review_scores_rating>4) %>% 
           select(nb_group,nb_cleansed,review_scores_rating,amenities_count, host_is_superhost), 
              aes(review_scores_rating,amenities_count, colour = nb_group)) +
-          geom_point() +
+          geom_point(alpha = 0.4) +
           facet_wrap(~nb_group) +
-          scale_colour_brewer(palette="Dark2")
+          scale_color_manual("rating.bin", values=c("#357b8a", "#7db5b8", "#59c6f3", "#f6c458"))
           
 scat1
 ```
@@ -450,7 +456,8 @@ scat3 <- ggplot(all.listings.final %>%
           filter(review_scores_rating>4) %>% 
           select(nb_group,nb_cleansed,review_scores_rating,amenities_count, host_is_superhost), 
              aes(review_scores_rating,amenities_count, colour = nb_group)) +
-               geom_point()
+               geom_point(alpha = 0.4) +
+          scale_color_manual("rating.bin", values=c("#357b8a", "#7db5b8", "#59c6f3", "#f6c458"))
   
 scat4<- ggMarginal(scat3, groupColour = TRUE, groupFill = TRUE)
 scat4
@@ -493,9 +500,91 @@ listing_summary$nb_cleansed <- as.character(listing_summary$nb_cleansed)
 listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
 ```
 
+```{r}
+#preparation of data
+#melbourne
+all.reviews.mel <- all.reviews.enriched %>% 
+  filter(last_scraped.new=="Jun-2022",
+         nb_group=="Melbourne") %>%
+  group_by(longitude,latitude,listing_id,nb_cleansed) %>%
+  summarise(count = n())
+```
+
+```{r}
+# all
+all.reviews.map <- all.reviews.enriched %>%
+  group_by(longitude,latitude,listing_id,nb_group,nb_cleansed,last_scraped.new) %>%
+  summarise(count = n())
+```
+
+```{r}
+# filtering only on top 5 suburbs
+
+top5.cities <- c("Melbourne","Yarra Ranges","Port Phillip","Yarra","Stonnington","Hobart","Break O'day","Launceston","Glamorgan/Spring Bay","Tasman","Santiago","Providencia","Las Condes","Lo Barnechea","Ñuñoa","Byron Shire Council","Tweed Shire Council","Ballina Shire Council","Clarence Valley Council","Lismore City Council")
+
+#melbourne
+all.reviews.map %>%
+  filter(nb_group =="Melbourne",
+         last_scraped.new=="Jun-2022") %>%
+  filter(nb_cleansed %in% top5.cities) %>% 
+  ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
+    geom_point(alpha=0.5, shape=21, color="black") +
+    scale_size(range = c(.1, 24), name="Number ofunique reviews") +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    coord_map()
+    theme_ipsum() +
+    theme(legend.position = "none")
+#Santiago
+all.reviews.map %>%
+  filter(nb_group =="Santiago",
+         last_scraped.new=="Jun-2022") %>%
+  filter(nb_cleansed %in% top5.cities) %>% 
+  ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
+    geom_point(alpha=0.5, shape=21, color="black") +
+    scale_size(range = c(.1, 24), name="Number of unique reviews") +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(legend.position = "none")
+#Tassie
+all.reviews.map %>%
+  filter(nb_group =="Tasmania",
+         last_scraped.new=="Jun-2022") %>%
+  filter(nb_cleansed %in% top5.cities) %>% 
+  ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
+    geom_point(alpha=0.5, shape=21, color="black") +
+    scale_size(range = c(.1, 24), name="Number of unique reviews") +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(legend.position = "none")
+#Northern Rivers
+all.reviews.map %>%
+  filter(nb_group =="Northern Rivers",
+         last_scraped.new=="Jun-2022") %>%
+  filter(nb_cleansed %in% top5.cities) %>% 
+  ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
+    geom_point(alpha=0.5, shape=21, color="black") +
+    scale_size(range = c(.1, 24), name="Number of unique reviews") +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum()
+```
+
+```{r}
+## get map and plot station locations 
+
+ggmap(get_googlemap(center=c(lon=144.94,lat=-37.84),
+                                     zoom = 10,maptype ='terrain',
+                                     color = 'color')) + 
+  geom_point(data=ggmap.meldata,aes(x=longitude,y=latitude,color=count),size=1,alpha=0.75)+
+  scale_colour_gradient(high="red",low='green')+ 
+  theme(axis.ticks = element_blank(),axis.text = element_blank())+
+  xlab('')+ylab('')
+
+```
+
 ```{r echo=FALSE}
 # combine summary and map
 mel.map.data <- mel.map %>% inner_join(listing_summary)
+# add listings
 
 #plot map
 ggplot(mel.map.data) +
@@ -568,18 +657,7 @@ leaflet(listings.tas) %>%
 
 Next, we will perform uni variate analysis over some key data sets
 
-**Popularity clusters (ggplot chorophlet of colored ratings)**
-
-```{r}
-#turn off sci notation.
-options(scipen = 999)
-# loading map geojson file
-mel.map <- st_read("data/Melbourne/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
-# create inner join of map and listings data
-map.plus.listings.mel <- mel.map %>% 
-  inner_join(grouped.mel, by = c("neighbourhood" = "neighbourhood_cleansed"))
-
-```
+**Popularity clusters (ggplot chorophlet of colored ratings**
 
 **Ratings vs count of amenities per listing (per city zone)**
 
@@ -590,68 +668,36 @@ Perhaps prices are a good indicator of indicator of preference?
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 options(scipen=999)
 
-# load melbourne map
-mel.map <- st_read("data/Melbourne/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
-#load scl map
-scl.map <- st_read("data/Santiago/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
-#load tassie map
-tas.map <- st_read("data/Tasmania/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
-#load nr map
-nr.map <- st_read("data/Northern Rivers/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
-nr.map$neighbourhood <- str_to_title(nr.map$neighbourhood)
-
-
-# collapse dataframe and summarise price by neighbourhood
-listing_summary <- all.listings.final %>%
-  filter(last_scraped.new == "Jun-2022") %>% 
-  group_by(nb_group,nb_cleansed,last_scraped.new) %>%
-  summarise(count = n(),
-            avg_price = mean(price),
-            min_price = min(price),
-            max_price = max(price))
-
-#correct listing summary fields
-
-listing_summary$nb_cleansed <- as.character(listing_summary$nb_cleansed)
-listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
-
-# combine summary and map
-mel.map.data <- mel.map %>% inner_join(listing_summary)
-scl.map.data <- scl.map %>% inner_join(listing_summary)
-tas.map.data <- tas.map %>% inner_join(listing_summary)
-nr.map.data <- nr.map %>% inner_join(listing_summary)
-```
-
-```{r}
-
-#plot maps
-ggplot(mel.map.data) +
-  geom_sf(aes(fill=avg_price)) +
-  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
-  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
-```
-
-```{r}
-#
-ggplot(scl.map.data) +
-  geom_sf(aes(fill=avg_price)) +
-  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
-  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
-```
-
-```{r}
-
-ggplot(tas.map.data) +
-  geom_sf(aes(fill=avg_price)) +
-  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
-  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
-```
-
-```{r}
-ggplot(nr.map.data) +
-  geom_sf(aes(fill=avg_price)) +
-  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
-  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
+# # load melbourne map
+# mel.map <- st_read("data/Melbourne/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+# #load scl map
+# scl.map <- st_read("data/Santiago/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+# #load tassie map
+# tas.map <- st_read("data/Tasmania/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+# #load nr map
+# nr.map <- st_read("data/Northern Rivers/2022_06/neighbourhoods.geojson", stringsAsFactors = FALSE)
+# nr.map$neighbourhood <- str_to_title(nr.map$neighbourhood)
+# 
+# 
+# # collapse dataframe and summarise price by neighbourhood
+# listing_summary <- all.listings.final %>%
+#   filter(last_scraped.new == "Jun-2022") %>% 
+#   group_by(nb_group,nb_cleansed,last_scraped.new) %>%
+#   summarise(count = n(),
+#             avg_price = mean(price),
+#             min_price = min(price),
+#             max_price = max(price))
+# 
+# #correct listing summary fields
+# 
+# listing_summary$nb_cleansed <- as.character(listing_summary$nb_cleansed)
+# listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
+# 
+# # combine summary and map
+# mel.map.data <- mel.map %>% inner_join(listing_summary)
+# scl.map.data <- scl.map %>% inner_join(listing_summary)
+# tas.map.data <- tas.map %>% inner_join(listing_summary)
+# nr.map.data <- nr.map %>% inner_join(listing_summary)
 ```
 
 However, this is
