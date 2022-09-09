@@ -304,8 +304,8 @@ all.listings.final <- all.listings.clean %>%
 -   Combine listing data into the reviews dataset
 
 ```{r include=FALSE}
-all.reviews.enriched <- all.reviews %>%
-  left_join(all.listings.clean, by=c("listing_id" = "id")) %>%
+all.reviews.enriched <- all.reviews.clean %>%
+  left_join(all.listings.final, by=c("listing_id" = "id")) %>%
   filter(last_scraped.new == "Jun-2022")
 ```
 
@@ -501,28 +501,20 @@ listing_summary <- listing_summary %>% rename(neighbourhood = nb_cleansed)
 ```
 
 ```{r}
-#preparation of data
-#melbourne
-all.reviews.mel <- all.reviews.enriched %>% 
-  filter(last_scraped.new=="Jun-2022",
-         nb_group=="Melbourne") %>%
-  group_by(longitude,latitude,listing_id,nb_cleansed) %>%
-  summarise(count = n())
-```
-
-```{r}
-# all
+# Preparation of data
 all.reviews.map <- all.reviews.enriched %>%
   group_by(longitude,latitude,listing_id,nb_group,nb_cleansed,last_scraped.new) %>%
   summarise(count = n())
-```
 
-```{r}
 # filtering only on top 5 suburbs
 
 top5.cities <- c("Melbourne","Yarra Ranges","Port Phillip","Yarra","Stonnington","Hobart","Break O'day","Launceston","Glamorgan/Spring Bay","Tasman","Santiago","Providencia","Las Condes","Lo Barnechea","Ñuñoa","Byron Shire Council","Tweed Shire Council","Ballina Shire Council","Clarence Valley Council","Lismore City Council")
+```
 
-#melbourne
+Best option so far
+
+```{r}
+#Melbourne
 all.reviews.map %>%
   filter(nb_group =="Melbourne",
          last_scraped.new=="Jun-2022") %>%
@@ -531,9 +523,11 @@ all.reviews.map %>%
     geom_point(alpha=0.5, shape=21, color="black") +
     scale_size(range = c(.1, 24), name="Number ofunique reviews") +
     scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
-    coord_map()
     theme_ipsum() +
-    theme(legend.position = "none")
+    theme(legend.position="bottom") +
+    theme(legend.position = "none") +
+    coord_map()
+
 #Santiago
 all.reviews.map %>%
   filter(nb_group =="Santiago",
@@ -541,21 +535,27 @@ all.reviews.map %>%
   filter(nb_cleansed %in% top5.cities) %>% 
   ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
     geom_point(alpha=0.5, shape=21, color="black") +
-    scale_size(range = c(.1, 24), name="Number of unique reviews") +
+    scale_size(range = c(.1, 24), name="Number ofunique reviews") +
     scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
     theme_ipsum() +
-    theme(legend.position = "none")
-#Tassie
+    theme(legend.position="bottom") +
+    theme(legend.position = "none") +
+    coord_map()
+
+#Tasmania
 all.reviews.map %>%
   filter(nb_group =="Tasmania",
          last_scraped.new=="Jun-2022") %>%
   filter(nb_cleansed %in% top5.cities) %>% 
   ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
     geom_point(alpha=0.5, shape=21, color="black") +
-    scale_size(range = c(.1, 24), name="Number of unique reviews") +
+    scale_size(range = c(.1, 24), name="Number ofunique reviews") +
     scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
     theme_ipsum() +
-    theme(legend.position = "none")
+    theme(legend.position="bottom") +
+    theme(legend.position = "none") +
+    coord_map()
+
 #Northern Rivers
 all.reviews.map %>%
   filter(nb_group =="Northern Rivers",
@@ -563,34 +563,26 @@ all.reviews.map %>%
   filter(nb_cleansed %in% top5.cities) %>% 
   ggplot(aes(x=longitude, y=latitude, size=count, fill=nb_cleansed)) +
     geom_point(alpha=0.5, shape=21, color="black") +
-    scale_size(range = c(.1, 24), name="Number of unique reviews") +
+    scale_size(range = c(.1, 24), name="Number ofunique reviews") +
     scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
-    theme_ipsum()
+    theme_ipsum() +
+    theme(legend.position="bottom") +
+    theme(legend.position = "none") +
+    coord_map()
 ```
 
 ```{r}
-## get map and plot station locations 
+#last option: leaflet
 
-ggmap(get_googlemap(center=c(lon=144.94,lat=-37.84),
-                                     zoom = 10,maptype ='terrain',
-                                     color = 'color')) + 
-  geom_point(data=ggmap.meldata,aes(x=longitude,y=latitude,color=count),size=1,alpha=0.75)+
-  scale_colour_gradient(high="red",low='green')+ 
-  theme(axis.ticks = element_blank(),axis.text = element_blank())+
-  xlab('')+ylab('')
+leaflet.test <- all.reviews.map %>%
+  filter(nb_group =="Melbourne",
+         last_scraped.new=="Jun-2022") %>%
+  filter(nb_cleansed %in% top5.cities)
 
-```
-
-```{r echo=FALSE}
-# combine summary and map
-mel.map.data <- mel.map %>% inner_join(listing_summary)
-# add listings
-
-#plot map
-ggplot(mel.map.data) +
-  geom_sf(aes(fill=avg_price)) +
-  scale_fill_gradient(low = "#56B1F7", high ="#132B43") +
-  geom_sf_text(aes(label=neighbourhood),color="white", check_overlap = TRUE)
+leaflet(leaflet.test) %>%
+  addTiles() %>%
+  addCircleMarkers(~longitude,~latitude, radius= ~count) %>% 
+  setView(144.94,-37.84, zoom = 12)
 ```
 
 #### Santiago
